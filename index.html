@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>KB청년도약계좌</title>
   
-  <!-- PWA 필수 설정: 독립 실행형 앱 모드 활성화 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="청년도약계좌">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#FFFFFF">
-
-  <!-- 인라인 Web Manifest (설치 팝업 및 주소창 숨김 트리거) -->
-  <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22KB%EC%B2%AD%EB%85%84%EB%8F%84%EC%95%BD%EA%B3%84%EC%A2%8C%22%2C%22short_name%22%3A%22%EC%B2%AD%EB%85%84%EB%8F%84%EC%95%BD%EA%B3%84%EC%A2%8C%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FFFFFF%22%2C%22theme_color%22%3A%22%23FFFFFF%22%2C%22icons%22%3A%5B%7B%22src%22%3A%221.jpg%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
+  <link rel="manifest" href="manifest.json">
 
   <!-- Ionicons -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -52,7 +49,6 @@
     }
     .hidden { display: none !important; }
 
-    /* Header */
     .header {
       height: 54px;
       padding: 0 20px;
@@ -78,7 +74,6 @@
       color: #222222;
     }
 
-    /* Account Header Section */
     .account-section {
       margin-top: 24px;
       padding: 0 24px;
@@ -98,7 +93,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Balance Section */
     .balance-section {
       margin-top: 40px;
       padding: 0 24px;
@@ -118,8 +112,10 @@
       color: #222222;
     }
 
-    /* Progress Block */
-    .progress-block { margin-top: 32px; padding: 0 24px; }
+    .progress-block {
+      margin-top: 32px;
+      padding: 0 24px;
+    }
     .day-badge-wrap { text-align: center; margin-bottom: 7px; }
     .day-badge {
       display: inline-block;
@@ -154,7 +150,6 @@
       letter-spacing: -0.4px;
     }
 
-    /* Action 3 Buttons */
     .button-row {
       display: flex;
       gap: 8px;
@@ -179,10 +174,8 @@
     .btn-primary { background-color: #FFCD00; font-weight: 400; }
     .action-btn:active { opacity: 0.85; transform: scale(0.99); }
 
-    /* Divider */
     .history-divider { height: 12px; background-color: #F4F5F7; margin-top: 38px; }
 
-    /* History List */
     .history-item { padding: 26px 24px 22px 24px; border-bottom: 1px solid #ECEEEF; }
     .history-title-row { display: flex; align-items: baseline; margin-bottom: 16px; }
     .installment-text { color: #1B1D20; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
@@ -211,7 +204,6 @@
       letter-spacing: -0.4px;
     }
 
-    /* Dedicated Screen */
     .scene-img-wrapper {
       height: 180px;
       margin: 14px 24px 0 24px;
@@ -235,7 +227,6 @@
     .summary-value { color: #1A1A1A; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
     .note-text { margin: 14px 24px 0 24px; color: #6B7077; font-size: 13.5px; line-height: 20px; letter-spacing: -0.35px; }
 
-    /* Detail Accordion */
     .detail-section { margin-top: 20px; border-top: 1px solid #E9EAEC; border-bottom: 1px solid #E9EAEC; }
     .section-header {
       min-height: 54px;
@@ -251,7 +242,6 @@
     .detail-label { color: #6C7077; }
     .detail-value { color: #222428; font-variant-numeric: tabular-nums; }
 
-    /* Benefit Card */
     .benefit-card {
       margin: 22px 24px 0 24px;
       padding: 16px;
@@ -265,7 +255,6 @@
     .benefit-label { color: #777C82; font-size: 14px; }
     .benefit-value { color: #1E79C9; font-size: 19px; font-weight: 600; }
 
-    /* Modals & Sheets */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -314,7 +303,6 @@
       cursor: pointer;
     }
 
-    /* Manage History Screen Items */
     .mgmt-item { padding: 20px 24px; border-bottom: 1px solid #E9EAEC; }
     .mgmt-head { display: flex; justify-content: space-between; }
     .mgmt-title { font-size: 17px; font-weight: 600; color: #25272B; }
@@ -331,7 +319,6 @@
       cursor: pointer;
     }
 
-    /* Menu Drawer */
     .menu-drawer {
       position: fixed;
       top: 0;
@@ -612,7 +599,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "@simulated-savings-ledger/v3";
+    const STORAGE_KEY = "@simulated-savings-ledger/v4";
     const DEFAULT_GOV_PER_DEP = 24000;
 
     let ledger = null;
@@ -945,11 +932,9 @@
       }
     }
 
-    // 서비스 워커 등록 (PWA 앱 설치 유도)
+    // 서비스 워커 파일 등록
     if ('serviceWorker' in navigator) {
-      const swCode = `self.addEventListener('fetch', function(e){});`;
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
 
     window.addEventListener('DOMContentLoaded', loadData);
