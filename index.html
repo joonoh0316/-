@@ -11,7 +11,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#FFFFFF">
 
-  <!-- 인라인 Web Manifest (Chrome PWA 설치 필수 PNG 스펙 내장) -->
+  <!-- 인라인 Web Manifest -->
   <link rel="manifest" id="manifest-placeholder">
 
   <!-- Ionicons -->
@@ -198,12 +198,19 @@
       font-variant-numeric: tabular-nums;
     }
     .accent-blue { color: #1E79C9 !important; font-weight: 500; }
+    
+    /* 구분선 연하게 및 좌우 간격 넓힘 적용 스타일 */
     .transfer-memo {
       margin-top: 14px;
       text-align: right;
-      color: #7E8289;
+      color: #8E929A;
       font-size: 14px;
       letter-spacing: -0.4px;
+    }
+    .transfer-memo .sep {
+      color: #C5C9D0;
+      margin: 0 6px;
+      font-weight: 300;
     }
 
     .scene-img-wrapper {
@@ -290,7 +297,7 @@
       outline: none;
     }
     .input-box:focus { border-color: #FFCD00; }
-    .two-cols { display: gap: 10px; }
+    .two-cols { display: flex; gap: 10px; }
     .two-cols > div { flex: 1; }
     .sheet-btn {
       width: 100%;
@@ -347,7 +354,6 @@
       gap: 10px;
     }
 
-    /* 설치 배너 */
     #installBanner {
       position: fixed;
       bottom: 0;
@@ -372,7 +378,6 @@
       cursor: pointer;
     }
 
-    /* 안드로이드 스타일 토스트 알림 */
     #appToast {
       position: fixed;
       bottom: 40px;
@@ -392,9 +397,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.18);
       white-space: nowrap;
     }
-    #appToast.show {
-      opacity: 1;
-    }
+    #appToast.show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -530,10 +533,7 @@
 
   </div>
 
-  <!-- 토스트 메시지 -->
   <div id="appToast">'뒤로' 버튼을 한 번 더 누르면 종료됩니다.</div>
-
-  <!-- 하단 설치 유도 알림 바 -->
   <div id="installBanner" class="hidden">
     <span>앱으로 설치하여 사용하기</span>
     <button onclick="triggerInstallPrompt()">설치하기</button>
@@ -659,7 +659,6 @@
   </div>
 
   <script>
-    // PWA Manifest 동적 생성
     (function setupDynamicManifest() {
       const canvas = document.createElement('canvas');
       canvas.width = 192;
@@ -715,7 +714,6 @@
     let lastBackPressTime = 0;
     let toastTimeout = null;
 
-    // 토스트 띄우기 함수
     function showToast(msg) {
       const toast = document.getElementById('appToast');
       toast.textContent = msg;
@@ -726,11 +724,9 @@
       }, 2000);
     }
 
-    // 안드로이드 물리/제스처 뒤로가기 완벽 제어 로직
     function setupHistoryGuard() {
       window.history.pushState({ page: 'app-root' }, "");
       window.addEventListener('popstate', (e) => {
-        // 1. 열려 있는 모달창이 있다면 모달창 닫기
         const openModal = document.querySelector('.modal-overlay:not(.hidden)');
         if (openModal) {
           openModal.classList.add('hidden');
@@ -738,17 +734,14 @@
           return;
         }
 
-        // 2. 메인화면(home)이 아닌 하위 화면(dedicated, history)일 경우 -> 홈으로 이동
         if (currentScreen !== 'home') {
           showScreen('home');
           window.history.pushState({ page: 'app-root' }, "");
           return;
         }
 
-        // 3. 메인화면(home)일 때: 2회 연속 터치 시에만 종료
         const now = Date.now();
         if (now - lastBackPressTime < 2000) {
-          // 2초 이내 재터치 -> 브라우저/앱 종료 허용
           window.history.back();
         } else {
           lastBackPressTime = now;
@@ -878,19 +871,24 @@
         balanceMap[d.id] = runBal;
       });
 
-      container.innerHTML = depositsSorted.map(d => `
-        <div class="history-item">
-          <div class="history-title-row">
-            <span class="installment-text">${d.installment}회차</span>
-            <div class="vertical-line"></div>
-            <span class="target-month-text">${formatTargetMonth(d.targetMonth)}</span>
+      container.innerHTML = depositsSorted.map(d => {
+        const parts = [d.depositLocation, d.depositAccount, d.memo].filter(Boolean);
+        const memoHtml = parts.length > 0 ? parts.join('<span class="sep">|</span>') : "입금 정보 미입력";
+
+        return `
+          <div class="history-item">
+            <div class="history-title-row">
+              <span class="installment-text">${d.installment}회차</span>
+              <div class="vertical-line"></div>
+              <span class="target-month-text">${formatTargetMonth(d.targetMonth)}</span>
+            </div>
+            <div class="history-row"><span class="history-label">납입일자</span><span class="history-value">${formatDateKorean(d.paidAt)}</span></div>
+            <div class="history-row"><span class="history-label">납입금액</span><span class="history-value accent-blue">${formatNumber(d.amount)} 원</span></div>
+            <div class="history-row"><span class="history-label">납입 후 잔액</span><span class="history-value">${formatNumber(balanceMap[d.id] || 0)} 원</span></div>
+            <div class="transfer-memo">${memoHtml}</div>
           </div>
-          <div class="history-row"><span class="history-label">납입일자</span><span class="history-value">${formatDateKorean(d.paidAt)}</span></div>
-          <div class="history-row"><span class="history-label">납입금액</span><span class="history-value accent-blue">${formatNumber(d.amount)} 원</span></div>
-          <div class="history-row"><span class="history-label">납입 후 잔액</span><span class="history-value">${formatNumber(balanceMap[d.id] || 0)} 원</span></div>
-          <div class="transfer-memo">${[d.depositLocation, d.depositAccount, d.memo].filter(Boolean).join("  |  ") || "입금 정보 미입력"}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function renderDedicatedScreen() {
@@ -912,24 +910,29 @@
         return;
       }
 
-      container.innerHTML = depositsSorted.map(d => `
-        <div class="mgmt-item">
-          <div class="mgmt-head">
-            <div>
-              <div class="mgmt-title">${d.installment}회차 <span style="color: #81858A; font-weight: normal;">${formatTargetMonth(d.targetMonth)}</span></div>
-              <div class="mgmt-date">${formatDateKorean(d.paidAt)}</div>
+      container.innerHTML = depositsSorted.map(d => {
+        const parts = [d.depositLocation, d.depositAccount, d.memo].filter(Boolean);
+        const memoHtml = parts.length > 0 ? parts.join('<span class="sep">|</span>') : "입금 정보 미입력";
+
+        return `
+          <div class="mgmt-item">
+            <div class="mgmt-head">
+              <div>
+                <div class="mgmt-title">${d.installment}회차 <span style="color: #81858A; font-weight: normal;">${formatTargetMonth(d.targetMonth)}</span></div>
+                <div class="mgmt-date">${formatDateKorean(d.paidAt)}</div>
+              </div>
+              <div class="mgmt-amount">${formatKrw(d.amount)}</div>
             </div>
-            <div class="mgmt-amount">${formatKrw(d.amount)}</div>
+            <div style="font-size: 13px; color: #8E929A; text-align: right; margin-top: 8px;">
+              ${memoHtml}
+            </div>
+            <div class="mgmt-actions">
+              <button class="mgmt-btn" onclick="openEditDeposit('${d.id}')">수정</button>
+              <button class="mgmt-btn" style="border-color: #E2E4E6; color: #686D73;" onclick="deleteDeposit('${d.id}')">삭제</button>
+            </div>
           </div>
-          <div style="font-size: 13px; color: #83878D; text-align: right; margin-top: 8px;">
-            ${[d.depositLocation, d.depositAccount, d.memo].filter(Boolean).join("  |  ") || "입금 정보 미입력"}
-          </div>
-          <div class="mgmt-actions">
-            <button class="mgmt-btn" onclick="openEditDeposit('${d.id}')">수정</button>
-            <button class="mgmt-btn" style="border-color: #E2E4E6; color: #686D73;" onclick="deleteDeposit('${d.id}')">삭제</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -1067,7 +1070,6 @@
       }
     }
 
-    // 서비스 워커 등록
     if ('serviceWorker' in navigator) {
       const swCode = `self.addEventListener('fetch', function(e){});`;
       const blob = new Blob([swCode], { type: 'application/javascript' });
