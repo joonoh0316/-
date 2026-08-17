@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>거래내역 조회</title>
+  <title>거래내역조회</title>
   <!-- Ionicons -->
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -13,11 +13,11 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
     }
     body {
       background-color: #F8F9FA;
-      color: #202226;
+      color: #1A1A1A;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -31,32 +31,31 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      box-shadow: 0 0 25px rgba(0,0,0,0.06);
     }
     .view-screen {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding-bottom: 40px;
+      padding-bottom: 30px;
     }
     .hidden { display: none !important; }
 
     /* Header */
     .header {
-      height: 52px;
-      padding: 0 18px;
+      height: 54px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #F0F1F3;
       background-color: #FFFFFF;
       position: sticky;
       top: 0;
       z-index: 10;
     }
-    .header-left { display: flex; align-items: center; gap: 3px; }
-    .header-right { display: flex; align-items: center; gap: 8px; }
-    .header-title { font-size: 20px; font-weight: 500; letter-spacing: -0.8px; color: #1B1D20; }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .header-title { font-size: 19px; font-weight: 400; letter-spacing: -0.8px; color: #1E1E1E; }
     .icon-btn {
       background: none;
       border: none;
@@ -64,135 +63,147 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      padding: 4px;
-      color: #1B1D20;
+      padding: 2px;
+      color: #222222;
     }
 
-    /* Account Section */
-    .account-section { margin-top: 21px; padding: 0 22px; }
+    /* Account Header Section */
+    .account-section {
+      margin-top: 24px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
     .account-name-row { display: flex; align-items: center; gap: 6px; }
-    .account-name { font-size: 21px; font-weight: 500; color: #24262A; letter-spacing: -0.8px; }
+    .account-name { font-size: 16px; font-weight: 400; color: #333333; letter-spacing: -0.4px; }
     .account-number {
-      margin-top: 5px;
-      font-size: 26px;
-      line-height: 34px;
-      font-weight: 600;
-      letter-spacing: -0.8px;
-      color: #202226;
+      margin-top: 6px;
+      font-size: 23px;
+      line-height: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1A1A1A;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Balance */
-    .balance {
-      margin-top: 36px;
-      padding: 0 22px;
+    /* Balance Section */
+    .balance-section {
+      margin-top: 40px;
+      padding: 0 24px;
       text-align: right;
-      font-size: 36px;
-      line-height: 44px;
-      font-weight: 500;
-      letter-spacing: -1.5px;
-      color: #1D1E20;
+    }
+    .balance-num {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: #1A1A1A;
       font-variant-numeric: tabular-nums;
+    }
+    .balance-unit {
+      font-size: 26px;
+      font-weight: 400;
+      margin-left: 2px;
+      color: #222222;
     }
 
     /* Progress Block */
-    .progress-block { margin-top: 24px; padding: 0 22px; }
+    .progress-block { margin-top: 32px; padding: 0 24px; }
+    .day-badge-wrap { text-align: center; margin-bottom: 7px; }
     .day-badge {
       display: inline-block;
-      margin: 0 auto 8px auto;
-      padding: 5px 13px;
-      background-color: #4E535A;
-      border-radius: 15px;
+      padding: 3px 12px;
+      background-color: #4A4D52;
+      border-radius: 12px;
       color: #FFFFFF;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 500;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
     }
     .track {
-      height: 13px;
-      border-radius: 7px;
-      background-color: #F3F3F3;
-      border: 1px solid #DBDDE0;
+      height: 7px;
+      border-radius: 4px;
+      background-color: #EFEFEF;
       overflow: hidden;
       display: flex;
     }
     .progress-fill {
       height: 100%;
-      border-radius: 9px;
-      background-color: #FFCD00;
+      border-radius: 4px;
+      background-color: #FFC400;
       transition: width 0.4s ease;
       min-width: 4px;
     }
     .date-row {
       display: flex;
       justify-content: space-between;
-      margin-top: 10px;
-      color: #767A80;
-      font-size: 14px;
-      letter-spacing: -0.5px;
+      margin-top: 9px;
+      color: #7B7E84;
+      font-size: 13px;
+      letter-spacing: -0.4px;
     }
 
-    /* Button Row */
-    .button-row { display: flex; gap: 7px; padding: 0 22px; margin-top: 28px; }
+    /* Action 3 Buttons */
+    .button-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 24px;
+      margin-top: 30px;
+    }
     .action-btn {
       flex: 1;
-      height: 42px;
-      border-radius: 4px;
+      height: 48px;
+      border-radius: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
-      font-weight: 500;
+      font-size: 16px;
+      font-weight: 400;
       letter-spacing: -0.6px;
       border: none;
       cursor: pointer;
       color: #25272B;
     }
-    .btn-primary { background-color: #FFCD00; }
-    .btn-secondary { background-color: #F0F2F4; }
-    .action-btn:active { opacity: 0.85; transform: scale(0.98); }
+    .btn-secondary { background-color: #E9ECEF; }
+    .btn-primary { background-color: #FFCD00; font-weight: 400; }
+    .action-btn:active { opacity: 0.85; transform: scale(0.99); }
 
     /* Divider */
-    .history-divider { height: 10px; background-color: #F4F5F6; margin-top: 36px; }
+    .history-divider { height: 12px; background-color: #F4F5F7; margin-top: 38px; }
 
-    /* History List - 폰트 크기 슬림화 반영 */
-    .history-item { padding: 16px 22px; border-bottom: 1px solid #E9EAEC; }
-    .history-title-row { display: flex; align-items: center; margin-bottom: 10px; }
-    .installment-text { color: #25272B; font-size: 17px; font-weight: 600; letter-spacing: -0.6px; }
-    .vertical-line { width: 1px; height: 13px; background-color: #E0E1E3; margin: 0 8px; }
-    .target-month-text { color: #8B8F95; font-size: 16px; letter-spacing: -0.6px; }
+    /* History List - 2.jpg 1:1 디테일 */
+    .history-item { padding: 26px 24px 22px 24px; border-bottom: 1px solid #ECEEEF; }
+    .history-title-row { display: flex; align-items: baseline; margin-bottom: 16px; }
+    .installment-text { color: #1B1D20; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .vertical-line { width: 1px; height: 14px; background-color: #E2E4E6; margin: 0 10px; }
+    .target-month-text { color: #8A8E94; font-size: 18px; font-weight: 400; letter-spacing: -0.6px; }
     .history-row {
-      min-height: 24px;
+      min-height: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .history-label { color: #777B80; font-size: 14px; letter-spacing: -0.4px; }
+    .history-label { color: #6C7077; font-size: 16px; letter-spacing: -0.4px; }
     .history-value {
-      color: #24262A;
-      font-size: 15px;
-      font-weight: 500;
+      color: #1A1A1A;
+      font-size: 17px;
+      font-weight: 400;
       letter-spacing: -0.5px;
       font-variant-numeric: tabular-nums;
     }
-    .accent-blue { color: #238AD0 !important; }
+    .accent-blue { color: #1E79C9 !important; font-weight: 500; }
     .transfer-memo {
-      margin-top: 6px;
+      margin-top: 14px;
       text-align: right;
-      color: #8C9095;
-      font-size: 11px;
+      color: #7E8289;
+      font-size: 14px;
       letter-spacing: -0.4px;
     }
 
-    /* Empty State */
-    .empty-state { text-align: center; padding: 40px 20px; }
-    .empty-title { margin-top: 12px; color: #3B3E43; font-size: 16px; font-weight: 500; }
-    .empty-desc { margin-top: 6px; color: #85898E; font-size: 13px; line-height: 18px; }
-
-    /* Dedicated Screen Scene - 이미지 일러스트 교체 */
+    /* Dedicated Screen */
     .scene-img-wrapper {
-      height: 150px;
-      margin: 10px 22px 0 22px;
+      height: 180px;
+      margin: 14px 24px 0 24px;
       position: relative;
       overflow: hidden;
       border-bottom: 1px solid #E9EAEC;
@@ -205,68 +216,49 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center bottom;
+      object-position: center center;
     }
-
-    /* Summary Table */
-    .summary-table { margin: 0 22px; padding: 14px 0; border-bottom: 1px solid #E8E9EB; display: flex; flex-direction: column; gap: 10px; }
+    .summary-table { margin: 0 24px; padding: 18px 0; border-bottom: 1px solid #E8E9EB; display: flex; flex-direction: column; gap: 12px; }
     .summary-row { display: flex; justify-content: space-between; align-items: center; }
-    .summary-label { color: #757A80; font-size: 15px; }
-    .summary-value { color: #25272B; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
-    .note-text { margin: 11px 25px 0 25px; color: #7B8086; font-size: 11px; line-height: 16px; }
+    .summary-label { color: #6C7077; font-size: 16px; letter-spacing: -0.4px; }
+    .summary-value { color: #1A1A1A; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .note-text { margin: 12px 24px 0 24px; color: #7B8086; font-size: 12px; line-height: 18px; letter-spacing: -0.3px; }
 
     /* Detail Accordion */
-    .detail-section { margin-top: 18px; border-top: 1px solid #E9EAEC; border-bottom: 1px solid #E9EAEC; }
+    .detail-section { margin-top: 20px; border-top: 1px solid #E9EAEC; border-bottom: 1px solid #E9EAEC; }
     .section-header {
-      min-height: 52px;
-      padding: 0 22px;
+      min-height: 54px;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: pointer;
     }
-    .section-title { color: #36393E; font-size: 17px; font-weight: 500; }
-    .section-body { padding: 0 22px 15px 22px; display: flex; flex-direction: column; gap: 8px; }
-    .detail-line { display: flex; justify-content: space-between; font-size: 13px; }
-    .detail-label { color: #777C82; }
-    .detail-value { color: #303338; font-variant-numeric: tabular-nums; }
-
-    /* Ratio Table */
-    .ratio-table { margin-top: 4px; border-top: 1px solid #DDDFE2; border-left: 1px solid #DDDFE2; }
-    .ratio-row { display: flex; min-height: 38px; border-bottom: 1px solid #DDDFE2; }
-    .ratio-header { background-color: #F5F6F7; font-weight: 600; color: #5D6268; }
-    .ratio-cell {
-      flex: 1;
-      padding: 6px 2px;
-      border-right: 1px solid #DDDFE2;
-      color: #454A50;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .ratio-date { flex: 1.2; }
+    .section-title { color: #2B2E33; font-size: 17px; font-weight: 500; letter-spacing: -0.5px; }
+    .section-body { padding: 0 24px 18px 24px; display: flex; flex-direction: column; gap: 10px; }
+    .detail-line { display: flex; justify-content: space-between; font-size: 14px; }
+    .detail-label { color: #6C7077; }
+    .detail-value { color: #222428; font-variant-numeric: tabular-nums; }
 
     /* Benefit Card */
     .benefit-card {
-      margin: 21px 22px 0 22px;
-      padding: 14px;
+      margin: 22px 24px 0 24px;
+      padding: 16px;
       border: 1px solid #E0E2E4;
-      border-radius: 11px;
+      border-radius: 8px;
       background-color: #FFFFFF;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .benefit-top { display: flex; align-items: center; justify-content: space-between; font-size: 18px; font-weight: 600; color: #26282C; }
-    .benefit-bottom { margin-top: 15px; display: flex; align-items: baseline; justify-content: space-between; }
+    .benefit-top { display: flex; align-items: center; justify-content: space-between; font-size: 18px; font-weight: 600; color: #202226; }
+    .benefit-bottom { margin-top: 14px; display: flex; align-items: baseline; justify-content: space-between; }
     .benefit-label { color: #777C82; font-size: 14px; }
-    .benefit-value { color: #238AD0; font-size: 19px; font-weight: 600; }
+    .benefit-value { color: #1E79C9; font-size: 19px; font-weight: 600; }
 
     /* Modals & Sheets */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background-color: rgba(0,0,0,0.4);
+      background-color: rgba(0,0,0,0.45);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -274,24 +266,24 @@
     }
     .sheet {
       background-color: #FFFFFF;
-      border-top-left-radius: 22px;
-      border-top-right-radius: 22px;
-      padding: 20px 20px 30px 20px;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      padding: 22px 22px 34px 22px;
       max-height: 90vh;
       overflow-y: auto;
     }
     .sheet-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .sheet-title { color: #202226; font-size: 20px; font-weight: 600; letter-spacing: -0.8px; }
-    .sheet-desc { color: #72767B; font-size: 12px; line-height: 16px; margin-bottom: 12px; }
+    .sheet-desc { color: #72767B; font-size: 13px; line-height: 17px; margin-bottom: 14px; }
     .input-group { margin-top: 12px; }
     .input-label { display: block; color: #33363A; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
     .input-box {
       width: 100%;
-      height: 42px;
-      border: 1px solid #DDDFE2;
-      border-radius: 7px;
+      height: 44px;
+      border: 1px solid #D5D7DA;
+      border-radius: 6px;
       padding: 0 12px;
-      font-size: 14px;
+      font-size: 15px;
       color: #222428;
       outline: none;
     }
@@ -301,8 +293,8 @@
     .sheet-btn {
       width: 100%;
       height: 48px;
-      margin-top: 20px;
-      border-radius: 8px;
+      margin-top: 22px;
+      border-radius: 6px;
       background-color: #FFCD00;
       color: #222428;
       font-size: 16px;
@@ -312,15 +304,15 @@
     }
 
     /* Manage History Screen Items */
-    .mgmt-item { padding: 18px 22px; border-bottom: 1px solid #E9EAEC; }
+    .mgmt-item { padding: 20px 24px; border-bottom: 1px solid #E9EAEC; }
     .mgmt-head { display: flex; justify-content: space-between; }
-    .mgmt-title { font-size: 16px; font-weight: 600; color: #25272B; }
-    .mgmt-date { font-size: 12px; color: #7A7E84; margin-top: 4px; }
-    .mgmt-amount { font-size: 17px; font-weight: 600; color: #238AD0; }
-    .mgmt-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+    .mgmt-title { font-size: 17px; font-weight: 600; color: #25272B; }
+    .mgmt-date { font-size: 13px; color: #7A7E84; margin-top: 4px; }
+    .mgmt-amount { font-size: 18px; font-weight: 600; color: #1E79C9; }
+    .mgmt-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
     .mgmt-btn {
-      padding: 5px 12px;
-      font-size: 12px;
+      padding: 6px 14px;
+      font-size: 13px;
       border-radius: 4px;
       border: 1px solid #E2E4E6;
       background-color: #EEF0F2;
@@ -344,7 +336,7 @@
       gap: 16px;
     }
     .menu-item {
-      padding: 12px 0;
+      padding: 14px 0;
       border-bottom: 1px solid #F0F1F3;
       font-size: 16px;
       font-weight: 500;
@@ -361,38 +353,50 @@
 
     <!-- 1. 메인 홈 화면 -->
     <div id="screen-home" class="view-screen">
+      <!-- 헤더: 2.jpg 1:1 매칭 -->
       <header class="header">
         <div class="header-left">
-          <ion-icon name="chevron-back" style="font-size: 24px;"></ion-icon>
-          <span class="header-title">거래내역 조회</span>
+          <ion-icon name="chevron-back-outline" style="font-size: 24px; color: #1E1E1E;"></ion-icon>
+          <span class="header-title">거래내역조회</span>
         </div>
         <div class="header-right">
-          <button class="icon-btn" onclick="renderHomeScreen()"><ion-icon name="home-outline" style="font-size: 22px;"></ion-icon></button>
-          <button class="icon-btn" onclick="openMenu()"><ion-icon name="menu-outline" style="font-size: 26px;"></ion-icon></button>
+          <button class="icon-btn" onclick="renderHomeScreen()"><ion-icon name="home-outline" style="font-size: 24px;"></ion-icon></button>
+          <button class="icon-btn" onclick="openMenu()"><ion-icon name="menu-outline" style="font-size: 28px;"></ion-icon></button>
         </div>
       </header>
 
+      <!-- 계좌 섹션 -->
       <div class="account-section">
-        <div class="account-name-row">
-          <span class="account-name" id="homeAccountName">나의 모의 적금</span>
-          <button class="icon-btn" onclick="openAccountModal()" style="color: #6B6F75;">
-            <ion-icon name="pencil" style="font-size: 17px;"></ion-icon>
-          </button>
+        <div>
+          <div class="account-name-row">
+            <span class="account-name" id="homeAccountName">K B청년도약계좌</span>
+            <button class="icon-btn" onclick="openAccountModal()" style="color: #7A7E84;">
+              <ion-icon name="pencil" style="font-size: 15px;"></ion-icon>
+            </button>
+          </div>
+          <div class="account-number" id="homeAccountNumber">445303-04-117665</div>
         </div>
-        <div class="account-number" id="homeAccountNumber">번호를 설정해 주세요</div>
+        <button class="icon-btn" onclick="openAccountModal()" style="color: #666A70; margin-top: 16px;">
+          <ion-icon name="settings-outline" style="font-size: 23px;"></ion-icon>
+        </button>
       </div>
 
-      <div class="balance" id="homeBalance">0원</div>
+      <!-- 잔액 섹션 -->
+      <div class="balance-section">
+        <span class="balance-num" id="homeBalance">16,100,000</span><span class="balance-unit">원</span>
+      </div>
 
+      <!-- D-Day 프로그레스 바 -->
       <div class="progress-block">
-        <div style="text-align: center;"><div class="day-badge" id="homeDday">D-0</div></div>
-        <div class="track"><div class="progress-fill" id="homeProgressFill" style="width: 0%"></div></div>
+        <div class="day-badge-wrap"><div class="day-badge" id="homeDday">D-951</div></div>
+        <div class="track"><div class="progress-fill" id="homeProgressFill" style="width: 40%"></div></div>
         <div class="date-row">
-          <span id="homeOpenedAt">신규일 2026.01.01</span>
-          <span id="homeMaturesAt">만기일 2031.01.01</span>
+          <span id="homeOpenedAt">신규일 2024.03.25</span>
+          <span id="homeMaturesAt">만기일 2029.03.25</span>
         </div>
       </div>
 
+      <!-- 3버튼 영역 -->
       <div class="button-row">
         <button class="action-btn btn-secondary" onclick="openDepositModal()">입금</button>
         <button class="action-btn btn-secondary" onclick="openExitQueryModal()">해지예상조회</button>
@@ -400,6 +404,8 @@
       </div>
 
       <div class="history-divider"></div>
+
+      <!-- 납입 이력 리스트 -->
       <div id="homeHistoryContainer"></div>
     </div>
 
@@ -407,64 +413,63 @@
     <div id="screen-dedicated" class="view-screen hidden">
       <header class="header">
         <div class="header-left">
-          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="chevron-back" style="font-size: 24px;"></ion-icon></button>
+          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="chevron-back-outline" style="font-size: 24px;"></ion-icon></button>
           <span class="header-title">전용화면</span>
         </div>
         <div class="header-right">
-          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="home-outline" style="font-size: 22px;"></ion-icon></button>
-          <button class="icon-btn" onclick="openMenu()"><ion-icon name="menu-outline" style="font-size: 26px;"></ion-icon></button>
+          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="home-outline" style="font-size: 24px;"></ion-icon></button>
+          <button class="icon-btn" onclick="openMenu()"><ion-icon name="menu-outline" style="font-size: 28px;"></ion-icon></button>
         </div>
       </header>
 
-      <div class="account-section" style="margin-top: 16px;">
-        <div class="account-name" id="dedAccountName" style="font-size: 17px;">나의 모의 적금</div>
-        <div class="account-number" id="dedAccountNumber" style="font-size: 23px;">번호를 설정해 주세요</div>
+      <div class="account-section" style="margin-top: 18px;">
+        <div>
+          <div class="account-name" id="dedAccountName">K B청년도약계좌</div>
+          <div class="account-number" id="dedAccountNumber" style="font-size: 22px;">445303-04-117665</div>
+        </div>
       </div>
 
-      <!-- 사용자 제공 이미지 일러스트 삽입 영역 -->
+      <!-- 1.jpg 이미지 출력 -->
       <div class="scene-img-wrapper">
-        <img id="dedicatedIllustImg" src="" alt="적금 일러스트">
+        <img src="1.jpg" alt="적금 일러스트" onerror="this.src='https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=600&q=80'">
       </div>
 
       <div class="summary-table">
-        <div class="summary-row"><span class="summary-label">잔액</span><span class="summary-value accent-blue" id="dedBalance">0원</span></div>
-        <div class="summary-row"><span class="summary-label">정부기여금</span><span class="summary-value accent-blue" id="dedGov">0원</span></div>
+        <div class="summary-row"><span class="summary-label">잔액</span><span class="summary-value accent-blue" id="dedBalance">16,100,000원</span></div>
+        <div class="summary-row"><span class="summary-label">정부기여금</span><span class="summary-value accent-blue" id="dedGov">552,000원</span></div>
         <div class="summary-row"><span class="summary-label">환수기여금</span><span class="summary-value accent-blue">0원</span></div>
-        <div class="summary-row"><span class="summary-label">잔여기여금</span><span class="summary-value accent-blue" id="dedRemainingGov">0원</span></div>
+        <div class="summary-row"><span class="summary-label">잔여기여금</span><span class="summary-value accent-blue" id="dedRemainingGov">552,000원</span></div>
       </div>
-      <div class="note-text">* 입금 이력에는 표시하지 않고, 입금 1건마다 설정된 정부기여금을 별도로 누적합니다.</div>
 
+      <!-- 요청 문구 반영 -->
+      <div class="note-text">* 이 달 납입금액에 대한 정부기여금은 익월 10영업일에 적립되며, 정부기여금II는 2025.1월 납입액부터 지급됩니다.</div>
+
+      <!-- 일시납 정보 순서 및 내용 반영 -->
       <div class="detail-section">
         <div class="section-header" onclick="toggleAccordion('initialSection')">
           <span class="section-title">일시납 정보</span>
-          <ion-icon name="chevron-down" id="initialSectionIcon" style="color: #70757B;"></ion-icon>
+          <ion-icon name="chevron-down" id="initialSectionIcon" style="color: #70757B; font-size: 20px;"></ion-icon>
         </div>
         <div class="section-body hidden" id="initialSectionBody">
-          <div class="detail-line"><span class="detail-label">일시납입금액</span><span class="detail-value" id="dedInitialBal">0원</span></div>
+          <div class="detail-line"><span class="detail-label">일시납입금액</span><span class="detail-value">12,600,000원</span></div>
           <div class="detail-line"><span class="detail-label">월 설정금액</span><span class="detail-value">700,000원</span></div>
-          <div class="detail-line"><span class="detail-label">누적 정부기여금</span><span class="detail-value" id="dedGov2">0원</span></div>
-          <div class="detail-line"><span class="detail-label">일시납입 기간</span><span class="detail-value" id="dedInitialMonths">0개월</span></div>
-          <div class="detail-line"><span class="detail-label">입금 가능일</span><span class="detail-value" id="dedOpenedAt">2026.01.01</span></div>
+          <div class="detail-line"><span class="detail-label">월 정부기여금</span><span class="detail-value">24,000원</span></div>
+          <div class="detail-line"><span class="detail-label">일시납입 기간</span><span class="detail-value">18개월</span></div>
+          <div class="detail-line"><span class="detail-label">입금 가능일</span><span class="detail-value">2025.09.25</span></div>
         </div>
       </div>
 
+      <!-- 정부기여금 지급비율 -->
       <div class="detail-section" style="margin-top: -1px;">
         <div class="section-header" onclick="toggleAccordion('ratioSection')">
           <span class="section-title">정부기여금 지급비율</span>
-          <ion-icon name="chevron-down" id="ratioSectionIcon" style="color: #70757B;"></ion-icon>
+          <ion-icon name="chevron-down" id="ratioSectionIcon" style="color: #70757B; font-size: 20px;"></ion-icon>
         </div>
         <div class="section-body hidden" id="ratioSectionBody">
-          <div class="ratio-table">
-            <div class="ratio-row ratio-header">
-              <div class="ratio-cell ratio-date">적용기준일</div>
-              <div class="ratio-cell">정부기여금Ⅰ</div>
-              <div class="ratio-cell">정부기여금Ⅱ</div>
-            </div>
-            <div class="ratio-row"><div class="ratio-cell ratio-date">2026.04.01</div><div class="ratio-cell">6.0%</div><div class="ratio-cell">3.0%</div></div>
-            <div class="ratio-row"><div class="ratio-cell ratio-date">2025.04.01</div><div class="ratio-cell">6.0%</div><div class="ratio-cell">3.0%</div></div>
-            <div class="ratio-row"><div class="ratio-cell ratio-date">2025.01.01</div><div class="ratio-cell">–</div><div class="ratio-cell">3.0%</div></div>
-            <div class="ratio-row"><div class="ratio-cell ratio-date">2024.03.25</div><div class="ratio-cell">6.0%</div><div class="ratio-cell">–</div></div>
-          </div>
+          <div class="detail-line"><span class="detail-label">2026.04.01 ~</span><span class="detail-value">6.0% / 3.0%</span></div>
+          <div class="detail-line"><span class="detail-label">2025.04.01 ~</span><span class="detail-value">6.0% / 3.0%</span></div>
+          <div class="detail-line"><span class="detail-label">2025.01.01 ~</span><span class="detail-value">– / 3.0%</span></div>
+          <div class="detail-line"><span class="detail-label">2024.03.25 ~</span><span class="detail-value">6.0% / –</span></div>
         </div>
       </div>
 
@@ -478,7 +483,7 @@
     <div id="screen-history" class="view-screen hidden">
       <header class="header">
         <div class="header-left">
-          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="chevron-back" style="font-size: 24px;"></ion-icon></button>
+          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="chevron-back-outline" style="font-size: 24px;"></ion-icon></button>
           <span class="header-title">납입 이력 관리</span>
         </div>
       </header>
@@ -502,7 +507,7 @@
     </div>
   </div>
 
-  <!-- 모달 1: 가상 입금 / 수정 -->
+  <!-- 모달 1: 입금 / 수정 -->
   <div id="depositModal" class="modal-overlay hidden">
     <div class="sheet">
       <div class="sheet-title-row">
@@ -532,15 +537,15 @@
       </div>
       <div class="input-group">
         <label class="input-label">입금 위치</label>
-        <input type="text" id="depLocation" class="input-box" placeholder="예: 모바일뱅킹">
+        <input type="text" id="depLocation" class="input-box" placeholder="예: 교하">
       </div>
       <div class="input-group">
         <label class="input-label">입금 계좌</label>
-        <input type="text" id="depAccount" class="input-box" placeholder="예: 000-0000-0000">
+        <input type="text" id="depAccount" class="input-box" placeholder="예: 94320200478164">
       </div>
       <div class="input-group">
         <label class="input-label">메모</label>
-        <input type="text" id="depMemo" class="input-box" placeholder="예: 급여일 자동이체">
+        <input type="text" id="depMemo" class="input-box" placeholder="예: 기일입금">
       </div>
       <button class="sheet-btn" onclick="saveDeposit()">가상 입금 반영</button>
     </div>
@@ -557,11 +562,11 @@
       
       <div class="input-group">
         <label class="input-label">계좌 이름</label>
-        <input type="text" id="accName" class="input-box" placeholder="예: 여름 여행 적금">
+        <input type="text" id="accName" class="input-box" placeholder="예: K B청년도약계좌">
       </div>
       <div class="input-group">
         <label class="input-label">표시용 계좌 번호</label>
-        <input type="text" id="accNumber" class="input-box" placeholder="000-0000-0000">
+        <input type="text" id="accNumber" class="input-box" placeholder="445303-04-117665">
       </div>
       <div class="two-cols">
         <div class="input-group">
@@ -606,13 +611,9 @@
     </div>
   </div>
 
-  <!-- 로직 스크립트 -->
   <script>
     const STORAGE_KEY = "@simulated-savings-ledger/v1";
-    const DEFAULT_GOV_PER_DEP = 33000;
-
-    // 첨부 이미지 SVG / Canvas 렌더링 내장 데이터
-    const DEDICATED_IMG_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" width="100%" height="100%"><defs><linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23FFFFFF"/><stop offset="100%" stop-color="%23F8F9FA"/></linearGradient><linearGradient id="cardG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%232AD1B2"/><stop offset="100%" stop-color="%230DB195"/></linearGradient></defs><rect width="400" height="160" fill="url(%23bgG)"/><polygon points="310,20 314,28 323,29 316,35 318,44 310,39 302,44 304,35 297,29 306,28" fill="%23F6CE53"/><rect x="125" y="45" width="150" height="105" rx="10" fill="url(%23cardG)"/><rect x="135" y="58" width="30" height="4" rx="2" fill="%237CE8D6"/><rect x="135" y="66" width="18" height="4" rx="2" fill="%237CE8D6"/><text x="200" y="102" font-size="34" font-weight="900" fill="%23FFEA00" text-anchor="middle" font-family="sans-serif">₩</text><g fill="%23ECC038" stroke="%23D9A418" stroke-width="1.5"><ellipse cx="120" cy="142" rx="18" ry="7"/><ellipse cx="120" cy="136" rx="18" ry="7"/><ellipse cx="120" cy="130" rx="18" ry="7"/><ellipse cx="120" cy="124" rx="18" ry="7"/><ellipse cx="80" cy="142" rx="18" ry="7"/><ellipse cx="115" cy="100" rx="16" ry="6" transform="rotate(-15 115 100)"/></g><g transform="translate(195, 25)"><ellipse cx="65" cy="135" rx="35" ry="40" fill="%23FFFFFF"/><path d="M42 45 Q35 15 65 15 Q95 15 88 45 Z" fill="%234A362D"/><ellipse cx="65" cy="48" rx="24" ry="24" fill="%23F7C8A9"/><circle cx="56" cy="46" r="3.2" fill="%23222222"/><circle cx="74" cy="46" r="3.2" fill="%23222222"/><path d="M58 56 Q65 64 72 56 Z" fill="%23E06D53"/><ellipse cx="86" cy="132" rx="28" ry="22" fill="%23FFAFC3"/><ellipse cx="98" cy="125" rx="7" ry="6" fill="%23FF8BA7"/><circle cx="106" cy="126" r="1.8" fill="%23222222"/><polygon points="76,112 84,102 88,114" fill="%23FFAFC3"/><path d="M38 120 Q60 145 78 138" stroke="%23F7C8A9" stroke-width="11" stroke-linecap="round" fill="none"/></g></svg>`;
+    const DEFAULT_GOV_PER_DEP = 24000;
 
     let ledger = null;
 
@@ -621,25 +622,75 @@
       return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }
 
-    function addYears(isoDate, years) {
-      const [y, m, d] = isoDate.split("-").map(Number);
-      return `${y + years}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    }
-
     function createInitialLedger() {
-      const openedAt = todayIso();
       return {
         account: {
-          name: "나의 모의 적금",
-          displayNumber: "123-4567-8901",
-          openedAt: openedAt,
-          maturesAt: addYears(openedAt, 5),
+          name: "K B청년도약계좌",
+          displayNumber: "445303-04-117665",
+          openedAt: "2024-03-25",
+          maturesAt: "2029-03-25",
           annualRate: 3.5,
-          initialBalance: 0,
+          initialBalance: 12600000,
           linkedAccountNumbers: [],
           governmentContributionPerDeposit: DEFAULT_GOV_PER_DEP
         },
-        deposits: []
+        deposits: [
+          {
+            id: "dep-init-6",
+            installment: 6,
+            targetMonth: "2026-04",
+            paidAt: "2026-04-13",
+            amount: 700000,
+            depositLocation: "교하",
+            depositAccount: "94320200478164",
+            memo: "기일입금",
+            createdAt: "2026-04-13T09:00:00.000Z"
+          },
+          {
+            id: "dep-init-5",
+            installment: 5,
+            targetMonth: "2026-03",
+            paidAt: "2026-03-12",
+            amount: 700000,
+            depositLocation: "교하",
+            depositAccount: "94320200478164",
+            memo: "기일입금",
+            createdAt: "2026-03-12T09:00:00.000Z"
+          },
+          {
+            id: "dep-init-4",
+            installment: 4,
+            targetMonth: "2026-02",
+            paidAt: "2026-02-12",
+            amount: 700000,
+            depositLocation: "교하",
+            depositAccount: "94320200478164",
+            memo: "기일입금",
+            createdAt: "2026-02-12T09:00:00.000Z"
+          },
+          {
+            id: "dep-init-3",
+            installment: 3,
+            targetMonth: "2026-01",
+            paidAt: "2026-01-12",
+            amount: 700000,
+            depositLocation: "교하",
+            depositAccount: "94320200478164",
+            memo: "기일입금",
+            createdAt: "2026-01-12T09:00:00.000Z"
+          },
+          {
+            id: "dep-init-2",
+            installment: 2,
+            targetMonth: "2025-12",
+            paidAt: "2025-12-12",
+            amount: 700000,
+            depositLocation: "교하",
+            depositAccount: "94320200478164",
+            memo: "기일입금",
+            createdAt: "2025-12-12T09:00:00.000Z"
+          }
+        ]
       };
     }
 
@@ -650,7 +701,6 @@
       } else {
         ledger = createInitialLedger();
       }
-      document.getElementById('dedicatedIllustImg').src = DEDICATED_IMG_SVG;
       renderHomeScreen();
     }
 
@@ -661,6 +711,10 @@
 
     function formatKrw(v) {
       return `${Math.round(v).toLocaleString("ko-KR")}원`;
+    }
+
+    function formatNumber(v) {
+      return `${Math.round(v).toLocaleString("ko-KR")}`;
     }
 
     function formatDateKorean(iso) {
@@ -696,7 +750,8 @@
     }
 
     function getGovernmentContribution() {
-      return ledger.deposits.length * (ledger.account.governmentContributionPerDeposit || DEFAULT_GOV_PER_DEP);
+      // 일시납 18개월분(432,000원) + 건당 24,000원
+      return (18 * DEFAULT_GOV_PER_DEP) + (ledger.deposits.length * (ledger.account.governmentContributionPerDeposit || DEFAULT_GOV_PER_DEP));
     }
 
     function getEstimatedMaturityInterest() {
@@ -727,27 +782,22 @@
 
       document.getElementById('homeAccountName').textContent = ledger.account.name;
       document.getElementById('homeAccountNumber').textContent = ledger.account.displayNumber;
-      document.getElementById('homeBalance').textContent = formatKrw(balance);
+      document.getElementById('homeBalance').textContent = formatNumber(balance);
       document.getElementById('homeDday').textContent = `D-${prog.daysRemaining}`;
       document.getElementById('homeProgressFill').style.width = `${Math.max(2, prog.percent)}%`;
       document.getElementById('homeOpenedAt').textContent = `신규일 ${formatDateKorean(ledger.account.openedAt)}`;
       document.getElementById('homeMaturesAt').textContent = `만기일 ${formatDateKorean(ledger.account.maturesAt)}`;
 
-      const depositsSorted = [...ledger.deposits].sort((a, b) => b.paidAt.localeCompare(a.paidAt) || b.createdAt.localeCompare(a.createdAt));
+      const depositsSorted = [...ledger.deposits].sort((a, b) => b.paidAt.localeCompare(a.paidAt) || b.installment - a.installment);
       const container = document.getElementById('homeHistoryContainer');
 
       if (depositsSorted.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <ion-icon name="receipt-outline" style="font-size: 32px; color: #9A9EA3;"></ion-icon>
-            <div class="empty-title">아직 납입 이력이 없습니다.</div>
-            <div class="empty-desc">첫 가상 입금을 기록하고 적금 흐름을 확인해 보세요.</div>
-          </div>
-        `;
+        container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #8C9095;">납입 이력이 없습니다.</div>';
         return;
       }
 
-      const ascending = [...ledger.deposits].sort((a, b) => a.paidAt.localeCompare(b.paidAt) || a.createdAt.localeCompare(b.createdAt));
+      // 잔액 역산 계산
+      const ascending = [...ledger.deposits].sort((a, b) => a.paidAt.localeCompare(b.paidAt) || a.installment - b.installment);
       const balanceMap = {};
       let runBal = ledger.account.initialBalance || 0;
       ascending.forEach(d => {
@@ -763,8 +813,8 @@
             <span class="target-month-text">${formatTargetMonth(d.targetMonth)}</span>
           </div>
           <div class="history-row"><span class="history-label">납입일자</span><span class="history-value">${formatDateKorean(d.paidAt)}</span></div>
-          <div class="history-row"><span class="history-label">납입금액</span><span class="history-value accent-blue">${formatKrw(d.amount)}</span></div>
-          <div class="history-row"><span class="history-label">납입 후 잔액</span><span class="history-value">${formatKrw(balanceMap[d.id] || 0)}</span></div>
+          <div class="history-row"><span class="history-label">납입금액</span><span class="history-value accent-blue">${formatNumber(d.amount)} 원</span></div>
+          <div class="history-row"><span class="history-label">납입 후 잔액</span><span class="history-value">${formatNumber(balanceMap[d.id] || 0)} 원</span></div>
           <div class="transfer-memo">${[d.depositLocation, d.depositAccount, d.memo].filter(Boolean).join("  |  ") || "입금 정보 미입력"}</div>
         </div>
       `).join('');
@@ -773,26 +823,20 @@
     function renderDedicatedScreen() {
       const balance = getTotalBalance();
       const gov = getGovernmentContribution();
-      const initialMonths = Math.max(0, Math.round((new Date(`${ledger.account.maturesAt}T00:00:00`).getTime() - new Date(`${ledger.account.openedAt}T00:00:00`).getTime()) / (30.44 * 86400000)));
 
       document.getElementById('dedAccountName').textContent = ledger.account.name;
       document.getElementById('dedAccountNumber').textContent = ledger.account.displayNumber;
       document.getElementById('dedBalance').textContent = formatKrw(balance);
       document.getElementById('dedGov').textContent = formatKrw(gov);
-      document.getElementById('dedGov2').textContent = formatKrw(gov);
-      // 잔여기여금도 정부기여금과 똑같이 표시
       document.getElementById('dedRemainingGov').textContent = formatKrw(gov);
-      document.getElementById('dedInitialBal').textContent = formatKrw(ledger.account.initialBalance || 0);
-      document.getElementById('dedInitialMonths').textContent = `${initialMonths}개월`;
-      document.getElementById('dedOpenedAt').textContent = formatDateKorean(ledger.account.openedAt);
     }
 
     function renderHistoryScreen() {
-      const depositsSorted = [...ledger.deposits].sort((a, b) => b.paidAt.localeCompare(a.paidAt) || b.createdAt.localeCompare(a.createdAt));
+      const depositsSorted = [...ledger.deposits].sort((a, b) => b.paidAt.localeCompare(a.paidAt) || b.installment - a.installment);
       const container = document.getElementById('mgmtHistoryContainer');
 
       if (depositsSorted.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-title">관리할 납입 이력이 없습니다.</div></div>';
+        container.innerHTML = '<div style="padding: 40px 20px; text-align: center; color: #8C9095;">관리할 납입 이력이 없습니다.</div>';
         return;
       }
 
@@ -805,7 +849,7 @@
             </div>
             <div class="mgmt-amount">${formatKrw(d.amount)}</div>
           </div>
-          <div style="font-size: 11px; color: #83878D; text-align: right; margin-top: 8px;">
+          <div style="font-size: 13px; color: #83878D; text-align: right; margin-top: 8px;">
             ${[d.depositLocation, d.depositAccount, d.memo].filter(Boolean).join("  |  ") || "입금 정보 미입력"}
           </div>
           <div class="mgmt-actions">
@@ -824,13 +868,13 @@
       document.getElementById('depositModalTitle').textContent = "가상 입금";
       document.getElementById('depositModalDesc').textContent = "입금 정보를 입력하면 납입 이력에 바로 반영됩니다.";
       document.getElementById('editDepositId').value = "";
-      document.getElementById('depAmount').value = "";
+      document.getElementById('depAmount').value = "700000";
       document.getElementById('depInstallment').value = nextInst;
       document.getElementById('depTargetMonth').value = todayIso().slice(0, 7);
       document.getElementById('depPaidAt').value = todayIso();
-      document.getElementById('depLocation').value = "모바일뱅킹";
-      document.getElementById('depAccount').value = ledger.account.displayNumber;
-      document.getElementById('depMemo').value = "";
+      document.getElementById('depLocation').value = "교하";
+      document.getElementById('depAccount').value = "94320200478164";
+      document.getElementById('depMemo').value = "기일입금";
       openModal('depositModal');
     }
 
@@ -861,7 +905,7 @@
       const memo = document.getElementById('depMemo').value.trim();
 
       if (!amount || amount <= 0) {
-        alert("입금액은 1원 이상으로 입력해 주세요.");
+        alert("입금액을 입력해 주세요.");
         return;
       }
       if (!installment || installment < 1) {
