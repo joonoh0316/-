@@ -290,7 +290,7 @@
       outline: none;
     }
     .input-box:focus { border-color: #FFCD00; }
-    .two-cols { display: flex; gap: 10px; }
+    .two-cols { display: gap: 10px; }
     .two-cols > div { flex: 1; }
     .sheet-btn {
       width: 100%;
@@ -347,7 +347,7 @@
       gap: 10px;
     }
 
-    /* 설치 유도 바닥 팝업 바 */
+    /* 설치 배너 */
     #installBanner {
       position: fixed;
       bottom: 0;
@@ -370,6 +370,30 @@
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    /* 안드로이드 스타일 토스트 알림 */
+    #appToast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(32, 34, 38, 0.92);
+      color: #FFFFFF;
+      padding: 12px 22px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease-in-out;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+      white-space: nowrap;
+    }
+    #appToast.show {
+      opacity: 1;
     }
   </style>
 </head>
@@ -454,7 +478,7 @@
       <div class="summary-table">
         <div class="summary-row"><span class="summary-label">잔액</span><span class="summary-value accent-blue" id="dedBalance">12,600,000원</span></div>
         <div class="summary-row"><span class="summary-label">정부기여금</span><span class="summary-value accent-blue" id="dedGov">432,000원</span></div>
-        <div class="summary-row"><span class="summary-label">환수기여금</span><span class="summary-value accent-blue" id="0원">0원</span></div>
+        <div class="summary-row"><span class="summary-label">환수기여금</span><span class="summary-value accent-blue">0원</span></div>
         <div class="summary-row"><span class="summary-label">잔여기여금</span><span class="summary-value accent-blue" id="dedRemainingGov">432,000원</span></div>
       </div>
 
@@ -505,6 +529,9 @@
     </div>
 
   </div>
+
+  <!-- 토스트 메시지 -->
+  <div id="appToast">'뒤로' 버튼을 한 번 더 누르면 종료됩니다.</div>
 
   <!-- 하단 설치 유도 알림 바 -->
   <div id="installBanner" class="hidden">
@@ -632,7 +659,7 @@
   </div>
 
   <script>
-    // PWA Manifest 동적 생성 (PNG 캔버스 변환으로 Chrome 필수 조건 100% 충족)
+    // PWA Manifest 동적 생성
     (function setupDynamicManifest() {
       const canvas = document.createElement('canvas');
       canvas.width = 192;
@@ -684,6 +711,52 @@
     const STORAGE_KEY = "@simulated-savings-ledger/v5";
     const DEFAULT_GOV_PER_DEP = 24000;
     let ledger = null;
+    let currentScreen = 'home';
+    let lastBackPressTime = 0;
+    let toastTimeout = null;
+
+    // 토스트 띄우기 함수
+    function showToast(msg) {
+      const toast = document.getElementById('appToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // 안드로이드 물리/제스처 뒤로가기 완벽 제어 로직
+    function setupHistoryGuard() {
+      window.history.pushState({ page: 'app-root' }, "");
+      window.addEventListener('popstate', (e) => {
+        // 1. 열려 있는 모달창이 있다면 모달창 닫기
+        const openModal = document.querySelector('.modal-overlay:not(.hidden)');
+        if (openModal) {
+          openModal.classList.add('hidden');
+          window.history.pushState({ page: 'app-root' }, "");
+          return;
+        }
+
+        // 2. 메인화면(home)이 아닌 하위 화면(dedicated, history)일 경우 -> 홈으로 이동
+        if (currentScreen !== 'home') {
+          showScreen('home');
+          window.history.pushState({ page: 'app-root' }, "");
+          return;
+        }
+
+        // 3. 메인화면(home)일 때: 2회 연속 터치 시에만 종료
+        const now = Date.now();
+        if (now - lastBackPressTime < 2000) {
+          // 2초 이내 재터치 -> 브라우저/앱 종료 허용
+          window.history.back();
+        } else {
+          lastBackPressTime = now;
+          showToast("'뒤로' 버튼을 한 번 더 누르면 종료됩니다.");
+          window.history.pushState({ page: 'app-root' }, "");
+        }
+      });
+    }
 
     function todayIso() {
       const now = new Date();
@@ -714,6 +787,7 @@
         ledger = createInitialLedger();
       }
       renderHomeScreen();
+      setupHistoryGuard();
     }
 
     function persist() {
@@ -767,6 +841,7 @@
     }
 
     function showScreen(name) {
+      currentScreen = name;
       document.querySelectorAll('.view-screen').forEach(s => s.classList.add('hidden'));
       document.getElementById(`screen-${name}`).classList.remove('hidden');
       if (name === 'home') renderHomeScreen();
