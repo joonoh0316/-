@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>모의 적금 다이어리</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .text-scale-sm { font-size: 0.875rem; }
+    .text-scale-md { font-size: 1rem; }
+    .text-scale-lg { font-size: 1.125rem; }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- 상단 앱바 -->
+  <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur sticky top-0 z-10 px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand-500/30">
+        <i class="fa-solid fa-piggy-bank"></i>
+      </div>
+      <h1 class="font-bold text-base tracking-tight" id="appHeaderTitle">홈 대시보드</h1>
+    </div>
+    <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+      <span id="headerTotalBadge" class="bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-300 font-semibold px-2 py-1 rounded-lg">총 0원</span>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 영역 -->
+  <main id="mainApp" class="flex-1 max-w-md w-full mx-auto p-4 pb-24 space-y-4">
+    
+    <!-- 탭 1: 홈 (대표 적금 현황 & 간편 납입) -->
+    <section id="tab-home" class="tab-content space-y-4">
+      <!-- 대표 통장 선택 및 요약 카드 -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-xs text-slate-400 font-medium">선택된 모의 적금</span>
+            <div class="flex items-center space-x-2 mt-0.5">
+              <select id="activeGoalSelect" onchange="changeActiveGoal(this.value)" class="font-bold text-lg bg-transparent border-none focus:ring-0 p-0 text-slate-900 dark:text-white cursor-pointer"></select>
+            </div>
+          </div>
+          <span id="activeGoalDday" class="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 font-semibold px-2.5 py-1 rounded-full">진행중</span>
+        </div>
+
+        <div class="pt-2">
+          <div class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            <span id="activeGoalCurrent">0</span><span class="text-lg font-bold ml-1 text-slate-500">원</span>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-400 mt-1">
+            <span>목표 금액</span>
+            <span id="activeGoalTarget">0원</span>
+          </div>
+        </div>
+
+        <!-- 게이지 바 -->
+        <div class="space-y-1.5">
+          <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3.5 overflow-hidden p-0.5">
+            <div id="activeGoalProgressBar" class="bg-gradient-to-r from-brand-500 to-indigo-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-400">달성률 <strong id="activeGoalPercent" class="text-brand-600 dark:text-brand-400">0%</strong></span>
+            <span class="text-slate-400">남은 금액 <strong id="activeGoalRemain" class="text-slate-700 dark:text-slate-300">0원</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 빠른 입금 액션 -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">간편 가상 입금</h3>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="depositActive(1000)" class="py-3 px-2 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-brand-50 dark:hover:bg-slate-700 active:scale-95 text-xs font-bold text-slate-700 dark:text-slate-200 transition border border-slate-100 dark:border-slate-600">
+            +1,000원
+          </button>
+          <button onclick="depositActive(5000)" class="py-3 px-2 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-brand-50 dark:hover:bg-slate-700 active:scale-95 text-xs font-bold text-slate-700 dark:text-slate-200 transition border border-slate-100 dark:border-slate-600">
+            +5,000원
+          </button>
+          <button onclick="depositActive(10000)" class="py-3 px-2 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-brand-50 dark:hover:bg-slate-700 active:scale-95 text-xs font-bold text-slate-700 dark:text-slate-200 transition border border-slate-100 dark:border-slate-600">
+            +10,000원
+          </button>
+        </div>
+        <button onclick="openCustomDepositModal()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-98 text-white text-xs font-bold transition shadow-md shadow-brand-500/20 flex items-center justify-center space-x-1">
+          <i class="fa-solid fa-plus text-[10px]"></i>
+          <span>금액 직접 입력하여 저금하기</span>
+        </button>
+      </div>
+
+      <!-- 최근 납입 내역 (간이) -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">최근 납입 활동</h3>
+          <button onclick="switchTab('history')" class="text-xs text-brand-600 dark:text-brand-400 hover:underline">전체보기</button>
+        </div>
+        <div id="homeRecentLogs" class="space-y-2 text-xs">
+          <!-- JS 렌더링 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 탭 2: 전용 적금 (목표 통장 목록 및 추가) -->
+    <section id="tab-dedicated" class="tab-content hidden space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-bold text-slate-900 dark:text-white">나의 모의 적금 통장 목록</h2>
+        <button onclick="openNewGoalModal()" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm flex items-center space-x-1">
+          <i class="fa-solid fa-plus text-[10px]"></i>
+          <span>새 통장 개설</span>
+        </button>
+      </div>
+
+      <div id="goalsListContainer" class="space-y-3">
+        <!-- JS 렌더링 -->
+      </div>
+    </section>
+
+    <!-- 탭 3: 내역 관리 (전체 입출금 필터 및 검색) -->
+    <section id="tab-history" class="tab-content hidden space-y-3">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-2">
+        <div class="flex items-center bg-slate-50 dark:bg-slate-700/50 rounded-xl px-3 py-2">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
+          <input id="historySearchInput" oninput="renderHistoryList()" type="text" placeholder="메모 또는 통장 이름 검색..." class="w-full bg-transparent text-xs focus:outline-none text-slate-800 dark:text-slate-100">
+        </div>
+        <div class="flex space-x-2">
+          <select id="historyFilterGoal" onchange="renderHistoryList()" class="flex-1 bg-slate-50 dark:bg-slate-700/50 text-xs rounded-xl p-2 border-none text-slate-700 dark:text-slate-300"></select>
+        </div>
+      </div>
+
+      <div id="fullHistoryContainer" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/70 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700 text-xs overflow-hidden">
+        <!-- JS 렌더링 -->
+      </div>
+    </section>
+
+    <!-- 탭 4: 설정 (테마, 텍스트 크기, 데이터 백업/초기화) -->
+    <section id="tab-settings" class="tab-content hidden space-y-4">
+      <!-- 텍스트 크기 설정 -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">화면 글자 크기</h3>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="setTextScale('sm')" class="scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600" data-scale="sm">작게</button>
+          <button onclick="setTextScale('md')" class="scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600 bg-brand-50 text-brand-600 border-brand-500 dark:bg-slate-700 dark:text-brand-400" data-scale="md">보통</button>
+          <button onclick="setTextScale('lg')" class="scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600" data-scale="lg">크게</button>
+        </div>
+      </div>
+
+      <!-- 테마 설정 -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 flex justify-between items-center">
+        <div>
+          <div class="text-xs font-bold text-slate-800 dark:text-slate-100">다크 모드</div>
+          <div class="text-[11px] text-slate-400">어두운 화면으로 전환합니다</div>
+        </div>
+        <button onclick="toggleDarkMode()" id="darkModeToggleBtn" class="w-12 h-6 bg-slate-200 dark:bg-brand-600 rounded-full p-1 transition duration-300 ease-in-out flex items-center">
+          <div id="toggleDot" class="bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ease-in-out"></div>
+        </button>
+      </div>
+
+      <!-- 데이터 관리 -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">데이터 관리</h3>
+        <div class="space-y-2">
+          <button onclick="exportData()" class="w-full py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-download"></i>
+            <span>데이터 백업 (JSON 다운로드)</span>
+          </button>
+          <button onclick="resetAllData()" class="w-full py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-semibold border border-rose-100 dark:border-rose-900/50 flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>전체 데이터 초기화</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 하단 탭 내비게이션 바 -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 dark:bg-slate-800/90 backdrop-blur border-t border-slate-200 dark:border-slate-700 px-6 py-2 flex justify-between items-center z-20">
+    <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-brand-600 dark:text-brand-400" data-tab="home">
+      <i class="fa-solid fa-house text-base"></i>
+      <span class="text-[10px] mt-1 font-semibold">홈</span>
+    </button>
+    <button onclick="switchTab('dedicated')" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" data-tab="dedicated">
+      <i class="fa-solid fa-layer-group text-base"></i>
+      <span class="text-[10px] mt-1 font-semibold">전용적금</span>
+    </button>
+    <button onclick="switchTab('history')" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" data-tab="history">
+      <i class="fa-solid fa-list-ul text-base"></i>
+      <span class="text-[10px] mt-1 font-semibold">내역관리</span>
+    </button>
+    <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" data-tab="settings">
+      <i class="fa-solid fa-gear text-base"></i>
+      <span class="text-[10px] mt-1 font-semibold">설정</span>
+    </button>
+  </nav>
+
+  <!-- 모달: 새 통장 개설 -->
+  <div id="modalNewGoal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-5 space-y-4 animate-slide-up">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-slate-900 dark:text-white">새 모의 적금 통장 개설</h3>
+        <button onclick="closeModal('modalNewGoal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">적금 이름 / 목표</label>
+          <input id="inputGoalTitle" type="text" placeholder="예: 비상금 모으기, 맥북 사기" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">목표 금액 (원)</label>
+          <input id="inputGoalTarget" type="number" placeholder="1000000" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">아이콘 선택</label>
+          <div class="grid grid-cols-5 gap-2" id="iconPicker">
+            <button type="button" onclick="selectGoalIcon('💰')" class="icon-opt text-lg p-2 rounded-xl bg-brand-50 border border-brand-500">💰</button>
+            <button type="button" onclick="selectGoalIcon('✈️')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">✈️</button>
+            <button type="button" onclick="selectGoalIcon('💻')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">💻</button>
+            <button type="button" onclick="selectGoalIcon('☕')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">☕</button>
+            <button type="button" onclick="selectGoalIcon('🎁')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">🎁</button>
+          </div>
+        </div>
+      </div>
+      <button onclick="createNewGoal()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20">통장 만들기</button>
+    </div>
+  </div>
+
+  <!-- 모달: 직접 입금 -->
+  <div id="modalCustomDeposit" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-5 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-sm text-slate-900 dark:text-white">직접 저금하기</h3>
+        <button onclick="closeModal('modalCustomDeposit')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">입금할 금액 (원)</label>
+          <input id="inputDepositAmount" type="number" placeholder="50000" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">메모 (선택사항)</label>
+          <input id="inputDepositMemo" type="text" placeholder="예: 야식 참은 돈, 커피값 절약" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        </div>
+      </div>
+      <button onclick="submitCustomDeposit()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20">저금 완료</button>
+    </div>
+  </div>
+
+  <!-- 애플리케이션 스크립트 -->
+  <script>
+    // 기본 상태 데이터
+    let state = {
+      darkMode: false,
+      textScale: 'md',
+      activeGoalId: 'default',
+      goals: [
+        { id: 'default', title: '기본 모의 적금', target: 1000000, current: 0, icon: '💰', createdAt: Date.now() }
+      ],
+      transactions: []
+    };
+
+    let selectedIcon = '💰';
+
+    // 로컬 스토리지 로드
+    function initApp() {
+      const saved = localStorage.getItem('mockSavingsData_v2');
+      if (saved) {
+        try {
+          state = JSON.parse(saved);
+        } catch (e) {
+          console.error("데이터 로드 오류", e);
+        }
+      }
+      applyTheme();
+      applyTextScale();
+      renderAll();
+    }
+
+    function persist() {
+      localStorage.setItem('mockSavingsData_v2', JSON.stringify(state));
+      renderAll();
+    }
+
+    // 탭 전환
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeTabEl = document.getElementById(`tab-${tabId}`);
+      if (activeTabEl) activeTabEl.classList.remove('hidden');
+
+      const titles = { home: '홈 대시보드', dedicated: '전용 적금', history: '내역 관리', settings: '앱 설정' };
+      document.getElementById('appHeaderTitle').textContent = titles[tabId] || '모의 적금';
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = 'nav-btn flex flex-col items-center text-brand-600 dark:text-brand-400';
+        } else {
+          btn.className = 'nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200';
+        }
+      });
+
+      if (tabId === 'history') renderHistoryList();
+    }
+
+    // 활성 목표 가져오기
+    function getActiveGoal() {
+      return state.goals.find(g => g.id === state.activeGoalId) || state.goals[0];
+    }
+
+    function changeActiveGoal(id) {
+      state.activeGoalId = id;
+      persist();
+    }
+
+    // 입금 처리
+    function depositActive(amount, memo = '간편 입금') {
+      if (amount <= 0) return;
+      const goal = getActiveGoal();
+      if (!goal) return;
+
+      goal.current += amount;
+      state.transactions.unshift({
+        id: 'tx_' + Date.now(),
+        goalId: goal.id,
+        goalTitle: goal.title,
+        amount: amount,
+        memo: memo,
+        timestamp: Date.now()
+      });
+
+      persist();
+    }
+
+    function openCustomDepositModal() {
+      document.getElementById('inputDepositAmount').value = '';
+      document.getElementById('inputDepositMemo').value = '';
+      document.getElementById('modalCustomDeposit').classList.remove('hidden');
+    }
+
+    function submitCustomDeposit() {
+      const amount = Number(document.getElementById('inputDepositAmount').value);
+      const memo = document.getElementById('inputDepositMemo').value.trim() || '직접 입금';
+      if (!amount || amount <= 0) {
+        alert('올바른 금액을 입력해주세요.');
+        return;
+      }
+      depositActive(amount, memo);
+      closeModal('modalCustomDeposit');
+    }
+
+    // 모달 제어
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function openNewGoalModal() {
+      document.getElementById('inputGoalTitle').value = '';
+      document.getElementById('inputGoalTarget').value = '';
+      selectGoalIcon('💰');
+      document.getElementById('modalNewGoal').classList.remove('hidden');
+    }
+
+    function selectGoalIcon(icon) {
+      selectedIcon = icon;
+      document.querySelectorAll('#iconPicker button').forEach(btn => {
+        if (btn.textContent.trim() === icon) {
+          btn.className = 'icon-opt text-lg p-2 rounded-xl bg-brand-50 dark:bg-slate-700 border border-brand-500';
+        } else {
+          btn.className = 'icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent';
+        }
+      });
+    }
+
+    function createNewGoal() {
+      const title = document.getElementById('inputGoalTitle').value.trim();
+      const target = Number(document.getElementById('inputGoalTarget').value);
+      if (!title || target <= 0) {
+        alert('이름과 목표 금액을 올바르게 입력해주세요.');
+        return;
+      }
+
+      const newGoal = {
+        id: 'goal_' + Date.now(),
+        title: title,
+        target: target,
+        current: 0,
+        icon: selectedIcon,
+        createdAt: Date.now()
+      };
+
+      state.goals.push(newGoal);
+      state.activeGoalId = newGoal.id;
+      persist();
+      closeModal('modalNewGoal');
+      switchTab('home');
+    }
+
+    function deleteGoal(id, e) {
+      e.stopPropagation();
+      if (state.goals.length <= 1) {
+        alert('최소 1개의 통장은 유지되어야 합니다.');
+        return;
+      }
+      if (confirm('해당 적금 통장과 관련 내역을 삭제하시겠습니까?')) {
+        state.goals = state.goals.filter(g => g.id !== id);
+        state.transactions = state.transactions.filter(t => t.goalId !== id);
+        if (state.activeGoalId === id) {
+          state.activeGoalId = state.goals[0].id;
+        }
+        persist();
+      }
+    }
+
+    // 테마 & 글자 크기
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      persist();
+      applyTheme();
+    }
+
+    function applyTheme() {
+      const dot = document.getElementById('toggleDot');
+      if (state.darkMode) {
+        document.documentElement.classList.add('dark');
+        if (dot) dot.style.transform = 'translateX(24px)';
+      } else {
+        document.documentElement.classList.remove('dark');
+        if (dot) dot.style.transform = 'translateX(0px)';
+      }
+    }
+
+    function setTextScale(scale) {
+      state.textScale = scale;
+      persist();
+      applyTextScale();
+    }
+
+    function applyTextScale() {
+      document.body.classList.remove('text-scale-sm', 'text-scale-md', 'text-scale-lg');
+      document.body.classList.add(`text-scale-${state.textScale}`);
+
+      document.querySelectorAll('.scale-btn').forEach(btn => {
+        if (btn.dataset.scale === state.textScale) {
+          btn.className = 'scale-btn py-2 text-xs font-medium rounded-xl border border-brand-500 bg-brand-50 text-brand-600 dark:bg-slate-700 dark:text-brand-400';
+        } else {
+          btn.className = 'scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600';
+        }
+      });
+    }
+
+    // 백업 및 리셋
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `mock_savings_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function resetAllData() {
+      if (confirm('정말로 모든 적금 및 내역 데이터를 초기화하시겠습니까?')) {
+        localStorage.removeItem('mockSavingsData_v2');
+        location.reload();
+      }
+    }
+
+    // 렌더링 종합
+    function renderAll() {
+      const totalSaved = state.goals.reduce((acc, cur) => acc + cur.current, 0);
+      document.getElementById('headerTotalBadge').textContent = `총 ${totalSaved.toLocaleString()}원`;
+
+      // 1. 활성 적금 카드 렌더링
+      const activeGoal = getActiveGoal();
+      const selectEl = document.getElementById('activeGoalSelect');
+      selectEl.innerHTML = state.goals.map(g => `
+        <option value="${g.id}" ${g.id === activeGoal.id ? 'selected' : ''}>${g.icon} ${g.title}</option>
+      `).join('');
+
+      document.getElementById('activeGoalCurrent').textContent = activeGoal.current.toLocaleString();
+      document.getElementById('activeGoalTarget').textContent = `${activeGoal.target.toLocaleString()}원`;
+
+      const pct = Math.min(100, Math.round((activeGoal.current / activeGoal.target) * 100));
+      document.getElementById('activeGoalProgressBar').style.width = `${pct}%`;
+      document.getElementById('activeGoalPercent').textContent = `${pct}%`;
+
+      const remain = Math.max(0, activeGoal.target - activeGoal.current);
+      document.getElementById('activeGoalRemain').textContent = `${remain.toLocaleString()}원`;
+
+      // 2. 홈 화면 최근 3개 활동
+      const recentLogsEl = document.getElementById('homeRecentLogs');
+      const recentTx = state.transactions.slice(0, 3);
+      if (recentTx.length === 0) {
+        recentLogsEl.innerHTML = '<div class="py-4 text-center text-slate-400">아직 납입 활동이 없습니다.</div>';
+      } else {
+        recentLogsEl.innerHTML = recentTx.map(t => `
+          <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/40">
+            <div>
+              <div class="font-semibold text-slate-800 dark:text-slate-200">${t.memo}</div>
+              <div class="text-[10px] text-slate-400">${t.goalTitle} · ${new Date(t.timestamp).toLocaleDateString()}</div>
+            </div>
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">+${t.amount.toLocaleString()}원</span>
+          </div>
+        `).join('');
+      }
+
+      // 3. 전용 적금 목록 렌더링
+      const goalsContainer = document.getElementById('goalsListContainer');
+      goalsContainer.innerHTML = state.goals.map(g => {
+        const goalPct = Math.min(100, Math.round((g.current / g.target) * 100));
+        return `
+          <div onclick="changeActiveGoal('${g.id}'); switchTab('home');" class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border ${g.id === activeGoal.id ? 'border-brand-500 dark:border-brand-500 ring-1 ring-brand-500' : 'border-slate-200/70 dark:border-slate-700'} space-y-3 cursor-pointer">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center space-x-2">
+                <span class="text-2xl">${g.icon}</span>
+                <div>
+                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">${g.title}</h4>
+                  <p class="text-[10px] text-slate-400">목표: ${g.target.toLocaleString()}원</p>
+                </div>
+              </div>
+              <button onclick="deleteGoal('${g.id}', event)" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-800 dark:text-slate-200">${g.current.toLocaleString()}원</span>
+                <span class="text-brand-600 dark:text-brand-400">${goalPct}%</span>
+              </div>
+              <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                <div class="bg-brand-600 h-full rounded-full" style="width: ${goalPct}%"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 4. 내역 필터 드롭다운 갱신
+      const filterSelect = document.getElementById('historyFilterGoal');
+      if (filterSelect) {
+        filterSelect.innerHTML = `<option value="all">전체 통장 내역</option>` + state.goals.map(g => `
+          <option value="${g.id}">${g.icon} ${g.title}</option>
+        `).join('');
+      }
+    }
+
+    // 전체 내역 리스트 렌더링
+    function renderHistoryList() {
+      const container = document.getElementById('fullHistoryContainer');
+      const search = document.getElementById('historySearchInput').value.toLowerCase();
+      const goalFilter = document.getElementById('historyFilterGoal').value;
+
+      let filtered = state.transactions.filter(t => {
+        const matchSearch = t.memo.toLowerCase().includes(search) || t.goalTitle.toLowerCase().includes(search);
+        const matchGoal = goalFilter === 'all' || t.goalId === goalFilter;
+        return matchSearch && matchGoal;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="p-8 text-center text-slate-400">일치하는 내역이 없습니다.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => `
+        <div class="p-3.5 flex justify-between items-center hover:bg-slate-50/50 dark:hover:bg-slate-700/30">
+          <div>
+            <div class="font-bold text-slate-800 dark:text-slate-100">${t.memo}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${t.goalTitle} · ${new Date(t.timestamp).toLocaleString()}</div>
+          </div>
+          <span class="font-bold text-emerald-600 dark:text-emerald-400 text-xs">+${t.amount.toLocaleString()}원</span>
+        </div>
+      `).join('');
+    }
+
+    // 앱 실행
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
