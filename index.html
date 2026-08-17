@@ -3,591 +3,1018 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>모의 적금 다이어리</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
-          }
-        }
-      }
-    }
-  </script>
+  <title>거래내역 조회</title>
+  <!-- Ionicons for matching React Native Vector Icons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
       -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    }
+    body {
+      background-color: #F8F9FA;
+      color: #202226;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
       user-select: none;
     }
-    .text-scale-sm { font-size: 0.875rem; }
-    .text-scale-md { font-size: 1rem; }
-    .text-scale-lg { font-size: 1.125rem; }
+    #app-wrapper {
+      width: 100%;
+      max-width: 440px;
+      background-color: #FFFFFF;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+    .view-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 40px;
+    }
+    .hidden { display: none !important; }
+
+    /* Header */
+    .header {
+      height: 52px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #F0F1F3;
+      background-color: #FFFFFF;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 3px; }
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-title { font-size: 20px; font-weight: 500; letter-spacing: -0.8px; color: #1B1D20; }
+    .icon-btn {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 4px;
+      color: #1B1D20;
+    }
+
+    /* Account Section */
+    .account-section { margin-top: 21px; padding: 0 22px; }
+    .account-name-row { display: flex; align-items: center; gap: 6px; }
+    .account-name { font-size: 21px; font-weight: 500; color: #24262A; letter-spacing: -0.8px; }
+    .account-number {
+      margin-top: 5px;
+      font-size: 26px;
+      line-height: 34px;
+      font-weight: 600;
+      letter-spacing: -0.8px;
+      color: #202226;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Balance */
+    .balance {
+      margin-top: 36px;
+      padding: 0 22px;
+      text-align: right;
+      font-size: 36px;
+      line-height: 44px;
+      font-weight: 500;
+      letter-spacing: -1.5px;
+      color: #1D1E20;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Progress Block */
+    .progress-block { margin-top: 24px; padding: 0 22px; }
+    .day-badge {
+      display: inline-block;
+      margin: 0 auto 8px auto;
+      padding: 5px 13px;
+      background-color: #4E535A;
+      border-radius: 15px;
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+    .track {
+      height: 13px;
+      border-radius: 7px;
+      background-color: #F3F3F3;
+      border: 1px solid #DBDDE0;
+      overflow: hidden;
+      display: flex;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 9px;
+      background-color: #FFCD00;
+      transition: width 0.4s ease;
+      min-width: 4px;
+    }
+    .date-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      color: #767A80;
+      font-size: 14px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Button Row */
+    .button-row { display: flex; gap: 7px; padding: 0 22px; margin-top: 28px; }
+    .action-btn {
+      flex: 1;
+      height: 42px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.6px;
+      border: none;
+      cursor: pointer;
+      color: #25272B;
+    }
+    .btn-primary { background-color: #FFCD00; }
+    .btn-secondary { background-color: #F0F2F4; }
+    .action-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+    /* Divider */
+    .history-divider { height: 10px; background-color: #F4F5F6; margin-top: 36px; }
+
+    /* History List */
+    .history-item { padding: 22px 22px; border-bottom: 1px solid #E9EAEC; }
+    .history-title-row { display: flex; align-items: center; margin-bottom: 14px; }
+    .installment-text { color: #25272B; font-size: 21px; font-weight: 600; letter-spacing: -1px; }
+    .vertical-line { width: 1px; height: 16px; background-color: #E0E1E3; margin: 0 10px; }
+    .target-month-text { color: #8B8F95; font-size: 20px; letter-spacing: -1px; }
+    .history-row {
+      min-height: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-label { color: #777B80; font-size: 16px; letter-spacing: -0.6px; }
+    .history-value {
+      color: #24262A;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .accent-blue { color: #238AD0 !important; }
+    .transfer-memo {
+      margin-top: 10px;
+      text-align: right;
+      color: #8C9095;
+      font-size: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 40px 20px; }
+    .empty-title { margin-top: 12px; color: #3B3E43; font-size: 16px; font-weight: 500; }
+    .empty-desc { margin-top: 6px; color: #85898E; font-size: 13px; line-height: 18px; }
+
+    /* Scene / Dedicated Screen */
+    .scene {
+      height: 146px;
+      margin: 7px 22px 0 22px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid #E9EAEC;
+    }
+    .board {
+      position: absolute;
+      left: 26%;
+      bottom: 13px;
+      width: 105px;
+      height: 80px;
+      padding: 12px;
+      border-radius: 6px;
+      background-color: #32C8B2;
+    }
+    .board-line { width: 37px; height: 4px; margin-bottom: 7px; border-radius: 4px; background-color: #7FE1D3; }
+    .board-line-short { width: 22px; }
+    .chart { height: 26px; margin-top: 2px; display: flex; gap: 5px; align-items: flex-end; }
+    .bar-sm { width: 13px; height: 9px; background-color: #FFCD00; }
+    .bar-md { width: 13px; height: 17px; background-color: #FFCD00; }
+    .bar-lg { width: 13px; height: 25px; background-color: #FFCD00; }
+    .coins { position: absolute; left: 12%; bottom: 13px; }
+    .coin { width: 32px; height: 7px; border-radius: 10px; margin-top: -1px; border: 1px solid #DEA51E; background-color: #F8C941; }
+    .piggy {
+      position: absolute;
+      right: 17%;
+      bottom: 12px;
+      width: 58px;
+      height: 44px;
+      border-radius: 26px;
+      background-color: #F7B5C8;
+    }
+    .piggy-ear { position: absolute; top: -10px; right: 12px; width: 18px; height: 18px; border-radius: 12px; background-color: #F7B5C8; }
+    .piggy-eye { position: absolute; top: 13px; right: 14px; width: 5px; height: 5px; border-radius: 5px; background-color: #47454A; }
+    .piggy-snout { position: absolute; top: 18px; right: -6px; width: 18px; height: 14px; border-radius: 9px; background-color: #EF96B3; }
+    .sparkle { position: absolute; top: 25px; right: 8%; color: #FFCD00; font-size: 24px; }
+
+    /* Summary Table */
+    .summary-table { margin: 0 22px; padding: 14px 0; border-bottom: 1px solid #E8E9EB; display: flex; flex-direction: column; gap: 10px; }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; }
+    .summary-label { color: #757A80; font-size: 15px; }
+    .summary-value { color: #25272B; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .note-text { margin: 11px 25px 0 25px; color: #7B8086; font-size: 11px; line-height: 16px; }
+
+    /* Detail Accordion */
+    .detail-section { margin-top: 18px; border-top: 1px solid #E9EAEC; border-bottom: 1px solid #E9EAEC; }
+    .section-header {
+      min-height: 52px;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .section-title { color: #36393E; font-size: 17px; font-weight: 500; }
+    .section-body { padding: 0 22px 15px 22px; display: flex; flex-direction: column; gap: 8px; }
+    .detail-line { display: flex; justify-content: space-between; font-size: 13px; }
+    .detail-label { color: #777C82; }
+    .detail-value { color: #303338; font-variant-numeric: tabular-nums; }
+
+    /* Ratio Table */
+    .ratio-table { margin-top: 4px; border-top: 1px solid #DDDFE2; border-left: 1px solid #DDDFE2; }
+    .ratio-row { display: flex; min-height: 38px; border-bottom: 1px solid #DDDFE2; }
+    .ratio-header { background-color: #F5F6F7; font-weight: 600; color: #5D6268; }
+    .ratio-cell {
+      flex: 1;
+      padding: 6px 2px;
+      border-right: 1px solid #DDDFE2;
+      color: #454A50;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .ratio-date { flex: 1.2; }
+
+    /* Benefit Card */
+    .benefit-card {
+      margin: 21px 22px 0 22px;
+      padding: 14px;
+      border: 1px solid #E0E2E4;
+      border-radius: 11px;
+      background-color: #FFFFFF;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.03);
+    }
+    .benefit-top { display: flex; align-items: center; justify-content: space-between; font-size: 18px; font-weight: 600; color: #26282C; }
+    .benefit-bottom { margin-top: 15px; display: flex; align-items: baseline; justify-content: space-between; }
+    .benefit-label { color: #777C82; font-size: 14px; }
+    .benefit-value { color: #238AD0; font-size: 19px; font-weight: 600; }
+
+    /* Modals & Sheets */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      z-index: 100;
+    }
+    .sheet {
+      background-color: #FFFFFF;
+      border-top-left-radius: 22px;
+      border-top-right-radius: 22px;
+      padding: 20px 20px 30px 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .sheet-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .sheet-title { color: #202226; font-size: 20px; font-weight: 600; letter-spacing: -0.8px; }
+    .sheet-desc { color: #72767B; font-size: 12px; line-height: 16px; margin-bottom: 12px; }
+    .input-group { margin-top: 12px; }
+    .input-label { display: block; color: #33363A; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .input-box {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #DDDFE2;
+      border-radius: 7px;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #222428;
+      outline: none;
+    }
+    .input-box:focus { border-color: #FFCD00; }
+    .input-helper { margin-top: 4px; color: #7F8389; font-size: 11px; }
+    .two-cols { display: flex; gap: 10px; }
+    .two-cols > div { flex: 1; }
+    .sheet-btn {
+      width: 100%;
+      height: 48px;
+      margin-top: 20px;
+      border-radius: 8px;
+      background-color: #FFCD00;
+      color: #222428;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Manage History Screen Items */
+    .mgmt-item { padding: 20px 22px; border-bottom: 1px solid #E9EAEC; }
+    .mgmt-head { display: flex; justify-content: space-between; }
+    .mgmt-title { font-size: 18px; font-weight: 600; color: #25272B; }
+    .mgmt-date { font-size: 13px; color: #7A7E84; margin-top: 4px; }
+    .mgmt-amount { font-size: 19px; font-weight: 600; color: #238AD0; }
+    .mgmt-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+    .mgmt-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid #E2E4E6;
+      background-color: #EEF0F2;
+      color: #34373B;
+      cursor: pointer;
+    }
+
+    /* Menu Drawer */
+    .menu-drawer {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 280px;
+      background-color: #FFFFFF;
+      z-index: 120;
+      padding: 24px;
+      box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .menu-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #F0F1F3;
+      font-size: 16px;
+      font-weight: 500;
+      color: #202226;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+<body>
+  <div id="app-wrapper">
 
-  <!-- 상단 앱바 -->
-  <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur sticky top-0 z-10 px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-      <div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand-500/30">
-        <i class="fa-solid fa-piggy-bank"></i>
+    <!-- 1. 메인 홈 화면 -->
+    <div id="screen-home" class="view-screen">
+      <!-- 헤더 -->
+      <header class="header">
+        <div class="header-left">
+          <ion-icon name="chevron-back" style="font-size: 24px;"></ion-icon>
+          <span class="header-title">거래내역 조회</span>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn" onclick="renderHomeScreen()"><ion-icon name="home-outline" style="font-size: 22px;"></ion-icon></button>
+          <button class="icon-btn" onclick="openMenu()"><ion-icon name="menu-outline" style="font-size: 26px;"></ion-icon></button>
+        </div>
+      </header>
+
+      <!-- 계좌 정보 -->
+      <div class="account-section">
+        <div class="account-name-row">
+          <span class="account-name" id="homeAccountName">나의 모의 적금</span>
+          <button class="icon-btn" onclick="openAccountModal()" style="color: #6B6F75;">
+            <ion-icon name="pencil" style="font-size: 17px;"></ion-icon>
+          </button>
+        </div>
+        <div class="account-number" id="homeAccountNumber">번호를 설정해 주세요</div>
       </div>
-      <h1 class="font-bold text-base tracking-tight" id="appHeaderTitle">홈 대시보드</h1>
-    </div>
-    <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
-      <span id="headerTotalBadge" class="bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-300 font-semibold px-2 py-1 rounded-lg">총 0원</span>
-    </div>
-  </header>
 
-  <!-- 메인 컨텐츠 영역 -->
-  <main id="mainApp" class="flex-1 max-w-md w-full mx-auto p-4 pb-24 space-y-4">
-    
-    <!-- 탭 1: 홈 (대표 적금 현황 & 간편 납입) -->
-    <section id="tab-home" class="tab-content space-y-4">
-      <!-- 대표 통장 선택 및 요약 카드 -->
-      <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-4">
-        <div class="flex justify-between items-start">
-          <div>
-            <span class="text-xs text-slate-400 font-medium">선택된 모의 적금</span>
-            <div class="flex items-center space-x-2 mt-0.5">
-              <select id="activeGoalSelect" onchange="changeActiveGoal(this.value)" class="font-bold text-lg bg-transparent border-none focus:ring-0 p-0 text-slate-900 dark:text-white cursor-pointer"></select>
+      <!-- 잔액 -->
+      <div class="balance" id="homeBalance">0원</div>
+
+      <!-- D-Day 프로그레스 -->
+      <div class="progress-block">
+        <div style="text-align: center;"><div class="day-badge" id="homeDday">D-0</div></div>
+        <div class="track"><div class="progress-fill" id="homeProgressFill" style="width: 0%"></div></div>
+        <div class="date-row">
+          <span id="homeOpenedAt">신규일 2026.01.01</span>
+          <span id="homeMaturesAt">만기일 2031.01.01</span>
+        </div>
+      </div>
+
+      <!-- 버튼 3총사 -->
+      <div class="button-row">
+        <button class="action-btn btn-secondary" onclick="openDepositModal()">입금</button>
+        <button class="action-btn btn-secondary" onclick="openExitQueryModal()">해지예상조회</button>
+        <button class="action-btn btn-primary" onclick="showScreen('dedicated')">전용화면</button>
+      </div>
+
+      <!-- 구분선 -->
+      <div class="history-divider"></div>
+
+      <!-- 거래 이력 리스트 -->
+      <div id="homeHistoryContainer">
+        <!-- JS 렌더링 -->
+      </div>
+    </div>
+
+    <!-- 2. 전용화면 -->
+    <div id="screen-dedicated" class="view-screen hidden">
+      <header class="header">
+        <div class="header-left">
+          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="chevron-back" style="font-size: 24px;"></ion-icon></button>
+          <span class="header-title">전용화면</span>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="home-outline" style="font-size: 22px;"></ion-icon></button>
+          <button class="icon-btn" onclick="openMenu()"><ion-icon name="menu-outline" style="font-size: 26px;"></ion-icon></button>
+        </div>
+      </header>
+
+      <div class="account-section" style="margin-top: 16px;">
+        <div class="account-name" id="dedAccountName" style="font-size: 17px;">나의 모의 적금</div>
+        <div class="account-number" id="dedAccountNumber" style="font-size: 23px;">번호를 설정해 주세요</div>
+      </div>
+
+      <!-- 저금통 일러스트 씬 -->
+      <div class="scene">
+        <div class="coins"><div class="coin"></div><div class="coin"></div><div class="coin"></div></div>
+        <div class="board">
+          <div class="board-line"></div>
+          <div class="board-line board-line-short"></div>
+          <div class="chart">
+            <div class="bar-sm"></div>
+            <div class="bar-md"></div>
+            <div class="bar-lg"></div>
+          </div>
+        </div>
+        <div class="piggy">
+          <div class="piggy-ear"></div>
+          <div class="piggy-eye"></div>
+          <div class="piggy-snout"></div>
+        </div>
+        <ion-icon name="sparkles" class="sparkle"></ion-icon>
+      </div>
+
+      <!-- 요약 테이블 -->
+      <div class="summary-table">
+        <div class="summary-row"><span class="summary-label">잔액</span><span class="summary-value accent-blue" id="dedBalance">0원</span></div>
+        <div class="summary-row"><span class="summary-label">정부기여금</span><span class="summary-value accent-blue" id="dedGov">0원</span></div>
+        <div class="summary-row"><span class="summary-label">환수기여금</span><span class="summary-value accent-blue">0원</span></div>
+        <div class="summary-row"><span class="summary-label">잔여기여금</span><span class="summary-value accent-blue">0원</span></div>
+      </div>
+      <div class="note-text">* 입금 이력에는 표시하지 않고, 입금 1건마다 설정된 정부기여금을 별도로 누적합니다.</div>
+
+      <!-- 아코디언 1: 일시납 정보 -->
+      <div class="detail-section">
+        <div class="section-header" onclick="toggleAccordion('initialSection')">
+          <span class="section-title">일시납 정보</span>
+          <ion-icon name="chevron-down" id="initialSectionIcon" style="color: #70757B;"></ion-icon>
+        </div>
+        <div class="section-body hidden" id="initialSectionBody">
+          <div class="detail-line"><span class="detail-label">일시납입금액</span><span class="detail-value" id="dedInitialBal">0원</span></div>
+          <div class="detail-line"><span class="detail-label">월 설정금액</span><span class="detail-value">700,000원</span></div>
+          <div class="detail-line"><span class="detail-label">누적 정부기여금</span><span class="detail-value" id="dedGov2">0원</span></div>
+          <div class="detail-line"><span class="detail-label">일시납입 기간</span><span class="detail-value" id="dedInitialMonths">0개월</span></div>
+          <div class="detail-line"><span class="detail-label">입금 가능일</span><span class="detail-value" id="dedOpenedAt">2026.01.01</span></div>
+        </div>
+      </div>
+
+      <!-- 아코디언 2: 정부기여금 지급비율 -->
+      <div class="detail-section" style="margin-top: -1px;">
+        <div class="section-header" onclick="toggleAccordion('ratioSection')">
+          <span class="section-title">정부기여금 지급비율</span>
+          <ion-icon name="chevron-down" id="ratioSectionIcon" style="color: #70757B;"></ion-icon>
+        </div>
+        <div class="section-body hidden" id="ratioSectionBody">
+          <div class="ratio-table">
+            <div class="ratio-row ratio-header">
+              <div class="ratio-cell ratio-date">적용기준일</div>
+              <div class="ratio-cell">정부기여금Ⅰ</div>
+              <div class="ratio-cell">정부기여금Ⅱ</div>
             </div>
-          </div>
-          <span id="activeGoalDday" class="text-xs bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 font-semibold px-2.5 py-1 rounded-full">진행중</span>
-        </div>
-
-        <div class="pt-2">
-          <div class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            <span id="activeGoalCurrent">0</span><span class="text-lg font-bold ml-1 text-slate-500">원</span>
-          </div>
-          <div class="flex justify-between items-center text-xs text-slate-400 mt-1">
-            <span>목표 금액</span>
-            <span id="activeGoalTarget">0원</span>
-          </div>
-        </div>
-
-        <!-- 게이지 바 -->
-        <div class="space-y-1.5">
-          <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3.5 overflow-hidden p-0.5">
-            <div id="activeGoalProgressBar" class="bg-gradient-to-r from-brand-500 to-indigo-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-slate-400">달성률 <strong id="activeGoalPercent" class="text-brand-600 dark:text-brand-400">0%</strong></span>
-            <span class="text-slate-400">남은 금액 <strong id="activeGoalRemain" class="text-slate-700 dark:text-slate-300">0원</strong></span>
+            <div class="ratio-row"><div class="ratio-cell ratio-date">2026.04.01</div><div class="ratio-cell">6.0%</div><div class="ratio-cell">3.0%</div></div>
+            <div class="ratio-row"><div class="ratio-cell ratio-date">2025.04.01</div><div class="ratio-cell">6.0%</div><div class="ratio-cell">3.0%</div></div>
+            <div class="ratio-row"><div class="ratio-cell ratio-date">2025.01.01</div><div class="ratio-cell">–</div><div class="ratio-cell">3.0%</div></div>
+            <div class="ratio-row"><div class="ratio-cell ratio-date">2024.03.25</div><div class="ratio-cell">6.0%</div><div class="ratio-cell">–</div></div>
           </div>
         </div>
       </div>
 
-      <!-- 빠른 입금 액션 -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
-        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">간편 가상 입금</h3>
-        <div class="grid grid-cols-3 gap-2">
-          <button onclick="depositActive(1000)" class="py-3 px-2 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-brand-50 dark:hover:bg-slate-700 active:scale-95 text-xs font-bold text-slate-700 dark:text-slate-200 transition border border-slate-100 dark:border-slate-600">
-            +1,000원
-          </button>
-          <button onclick="depositActive(5000)" class="py-3 px-2 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-brand-50 dark:hover:bg-slate-700 active:scale-95 text-xs font-bold text-slate-700 dark:text-slate-200 transition border border-slate-100 dark:border-slate-600">
-            +5,000원
-          </button>
-          <button onclick="depositActive(10000)" class="py-3 px-2 rounded-xl bg-slate-50 dark:bg-slate-700/60 hover:bg-brand-50 dark:hover:bg-slate-700 active:scale-95 text-xs font-bold text-slate-700 dark:text-slate-200 transition border border-slate-100 dark:border-slate-600">
-            +10,000원
-          </button>
-        </div>
-        <button onclick="openCustomDepositModal()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-98 text-white text-xs font-bold transition shadow-md shadow-brand-500/20 flex items-center justify-center space-x-1">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span>금액 직접 입력하여 저금하기</span>
-        </button>
+      <!-- 우대금리 카드 -->
+      <div class="benefit-card">
+        <div class="benefit-top"><span>우대금리</span><ion-icon name="chevron-forward" style="color: #3B3E43; font-size: 18px;"></ion-icon></div>
+        <div class="benefit-bottom"><span class="benefit-label">달성현황</span><span class="benefit-value">연 0.4 %p</span></div>
       </div>
+    </div>
 
-      <!-- 최근 납입 내역 (간이) -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">최근 납입 활동</h3>
-          <button onclick="switchTab('history')" class="text-xs text-brand-600 dark:text-brand-400 hover:underline">전체보기</button>
+    <!-- 3. 납입 이력 관리 화면 -->
+    <div id="screen-history" class="view-screen hidden">
+      <header class="header">
+        <div class="header-left">
+          <button class="icon-btn" onclick="showScreen('home')"><ion-icon name="chevron-back" style="font-size: 24px;"></ion-icon></button>
+          <span class="header-title">납입 이력 관리</span>
         </div>
-        <div id="homeRecentLogs" class="space-y-2 text-xs">
-          <!-- JS 렌더링 -->
-        </div>
-      </div>
-    </section>
-
-    <!-- 탭 2: 전용 적금 (목표 통장 목록 및 추가) -->
-    <section id="tab-dedicated" class="tab-content hidden space-y-4">
-      <div class="flex justify-between items-center">
-        <h2 class="text-sm font-bold text-slate-900 dark:text-white">나의 모의 적금 통장 목록</h2>
-        <button onclick="openNewGoalModal()" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm flex items-center space-x-1">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span>새 통장 개설</span>
-        </button>
-      </div>
-
-      <div id="goalsListContainer" class="space-y-3">
+      </header>
+      <div id="mgmtHistoryContainer">
         <!-- JS 렌더링 -->
       </div>
-    </section>
+    </div>
 
-    <!-- 탭 3: 내역 관리 (전체 입출금 필터 및 검색) -->
-    <section id="tab-history" class="tab-content hidden space-y-3">
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-2">
-        <div class="flex items-center bg-slate-50 dark:bg-slate-700/50 rounded-xl px-3 py-2">
-          <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs mr-2"></i>
-          <input id="historySearchInput" oninput="renderHistoryList()" type="text" placeholder="메모 또는 통장 이름 검색..." class="w-full bg-transparent text-xs focus:outline-none text-slate-800 dark:text-slate-100">
-        </div>
-        <div class="flex space-x-2">
-          <select id="historyFilterGoal" onchange="renderHistoryList()" class="flex-1 bg-slate-50 dark:bg-slate-700/50 text-xs rounded-xl p-2 border-none text-slate-700 dark:text-slate-300"></select>
-        </div>
-      </div>
+  </div>
 
-      <div id="fullHistoryContainer" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/70 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700 text-xs overflow-hidden">
-        <!-- JS 렌더링 -->
+  <!-- 전체 메뉴 드로어 -->
+  <div id="menuDrawerOverlay" class="modal-overlay hidden" onclick="closeMenu()">
+    <div class="menu-drawer" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="font-size: 18px; font-weight: bold;">메뉴</span>
+        <button class="icon-btn" onclick="closeMenu()"><ion-icon name="close" style="font-size: 24px;"></ion-icon></button>
       </div>
-    </section>
-
-    <!-- 탭 4: 설정 (테마, 텍스트 크기, 데이터 백업/초기화) -->
-    <section id="tab-settings" class="tab-content hidden space-y-4">
-      <!-- 텍스트 크기 설정 -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
-        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">화면 글자 크기</h3>
-        <div class="grid grid-cols-3 gap-2">
-          <button onclick="setTextScale('sm')" class="scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600" data-scale="sm">작게</button>
-          <button onclick="setTextScale('md')" class="scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600 bg-brand-50 text-brand-600 border-brand-500 dark:bg-slate-700 dark:text-brand-400" data-scale="md">보통</button>
-          <button onclick="setTextScale('lg')" class="scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600" data-scale="lg">크게</button>
-        </div>
-      </div>
-
-      <!-- 테마 설정 -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 flex justify-between items-center">
-        <div>
-          <div class="text-xs font-bold text-slate-800 dark:text-slate-100">다크 모드</div>
-          <div class="text-[11px] text-slate-400">어두운 화면으로 전환합니다</div>
-        </div>
-        <button onclick="toggleDarkMode()" id="darkModeToggleBtn" class="w-12 h-6 bg-slate-200 dark:bg-brand-600 rounded-full p-1 transition duration-300 ease-in-out flex items-center">
-          <div id="toggleDot" class="bg-white w-4 h-4 rounded-full shadow-md transform transition duration-300 ease-in-out"></div>
-        </button>
-      </div>
-
-      <!-- 데이터 관리 -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/70 dark:border-slate-700 space-y-3">
-        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">데이터 관리</h3>
-        <div class="space-y-2">
-          <button onclick="exportData()" class="w-full py-2.5 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-600 flex items-center justify-center space-x-2">
-            <i class="fa-solid fa-download"></i>
-            <span>데이터 백업 (JSON 다운로드)</span>
-          </button>
-          <button onclick="resetAllData()" class="w-full py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-semibold border border-rose-100 dark:border-rose-900/50 flex items-center justify-center space-x-2">
-            <i class="fa-solid fa-trash-can"></i>
-            <span>전체 데이터 초기화</span>
-          </button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- 하단 탭 내비게이션 바 -->
-  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 dark:bg-slate-800/90 backdrop-blur border-t border-slate-200 dark:border-slate-700 px-6 py-2 flex justify-between items-center z-20">
-    <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-brand-600 dark:text-brand-400" data-tab="home">
-      <i class="fa-solid fa-house text-base"></i>
-      <span class="text-[10px] mt-1 font-semibold">홈</span>
-    </button>
-    <button onclick="switchTab('dedicated')" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" data-tab="dedicated">
-      <i class="fa-solid fa-layer-group text-base"></i>
-      <span class="text-[10px] mt-1 font-semibold">전용적금</span>
-    </button>
-    <button onclick="switchTab('history')" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" data-tab="history">
-      <i class="fa-solid fa-list-ul text-base"></i>
-      <span class="text-[10px] mt-1 font-semibold">내역관리</span>
-    </button>
-    <button onclick="switchTab('settings')" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" data-tab="settings">
-      <i class="fa-solid fa-gear text-base"></i>
-      <span class="text-[10px] mt-1 font-semibold">설정</span>
-    </button>
-  </nav>
-
-  <!-- 모달: 새 통장 개설 -->
-  <div id="modalNewGoal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-5 space-y-4 animate-slide-up">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-slate-900 dark:text-white">새 모의 적금 통장 개설</h3>
-        <button onclick="closeModal('modalNewGoal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-400 mb-1">적금 이름 / 목표</label>
-          <input id="inputGoalTitle" type="text" placeholder="예: 비상금 모으기, 맥북 사기" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">목표 금액 (원)</label>
-          <input id="inputGoalTarget" type="number" placeholder="1000000" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
-        </div>
-        <div>
-          <label class="block text-slate-400 mb-1">아이콘 선택</label>
-          <div class="grid grid-cols-5 gap-2" id="iconPicker">
-            <button type="button" onclick="selectGoalIcon('💰')" class="icon-opt text-lg p-2 rounded-xl bg-brand-50 border border-brand-500">💰</button>
-            <button type="button" onclick="selectGoalIcon('✈️')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">✈️</button>
-            <button type="button" onclick="selectGoalIcon('💻')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">💻</button>
-            <button type="button" onclick="selectGoalIcon('☕')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">☕</button>
-            <button type="button" onclick="selectGoalIcon('🎁')" class="icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent">🎁</button>
-          </div>
-        </div>
-      </div>
-      <button onclick="createNewGoal()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20">통장 만들기</button>
+      <div class="menu-item" onclick="closeMenu(); showScreen('home');"><ion-icon name="home-outline"></ion-icon> 거래내역 조회 (홈)</div>
+      <div class="menu-item" onclick="closeMenu(); showScreen('dedicated');"><ion-icon name="sparkles-outline"></ion-icon> 전용화면</div>
+      <div class="menu-item" onclick="closeMenu(); showScreen('history');"><ion-icon name="file-tray-full-outline"></ion-icon> 납입 이력 관리</div>
+      <div class="menu-item" onclick="closeMenu(); openAccountModal();"><ion-icon name="settings-outline"></ion-icon> 모의 계좌 설정</div>
+      <div class="menu-item" onclick="resetAllData();" style="color: #E53E3E;"><ion-icon name="trash-outline"></ion-icon> 전체 데이터 초기화</div>
     </div>
   </div>
 
-  <!-- 모달: 직접 입금 -->
-  <div id="modalCustomDeposit" class="hidden fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl p-5 space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-sm text-slate-900 dark:text-white">직접 저금하기</h3>
-        <button onclick="closeModal('modalCustomDeposit')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+  <!-- 모달 1: 가상 입금 / 수정 -->
+  <div id="depositModal" class="modal-overlay hidden">
+    <div class="sheet">
+      <div class="sheet-title-row">
+        <span class="sheet-title" id="depositModalTitle">가상 입금</span>
+        <button class="icon-btn" onclick="closeModal('depositModal')"><ion-icon name="close" style="font-size: 24px;"></ion-icon></button>
       </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-400 mb-1">입금할 금액 (원)</label>
-          <input id="inputDepositAmount" type="number" placeholder="50000" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+      <div class="sheet-desc" id="depositModalDesc">입금 정보를 입력하면 납입 이력에 바로 반영됩니다.</div>
+      <input type="hidden" id="editDepositId">
+      
+      <div class="input-group">
+        <label class="input-label">입금액</label>
+        <input type="number" id="depAmount" class="input-box" placeholder="0">
+        <div class="input-helper">한 번에 최대 700,000원까지 기록할 수 있습니다.</div>
+      </div>
+      <div class="two-cols">
+        <div class="input-group">
+          <label class="input-label">납입 회차</label>
+          <input type="number" id="depInstallment" class="input-box" placeholder="1">
         </div>
-        <div>
-          <label class="block text-slate-400 mb-1">메모 (선택사항)</label>
-          <input id="inputDepositMemo" type="text" placeholder="예: 야식 참은 돈, 커피값 절약" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+        <div class="input-group">
+          <label class="input-label">해당 연월분</label>
+          <input type="text" id="depTargetMonth" class="input-box" placeholder="YYYY-MM">
         </div>
       </div>
-      <button onclick="submitCustomDeposit()" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20">저금 완료</button>
+      <div class="input-group">
+        <label class="input-label">납입일자</label>
+        <input type="text" id="depPaidAt" class="input-box" placeholder="YYYY-MM-DD">
+      </div>
+      <div class="input-group">
+        <label class="input-label">입금 위치</label>
+        <input type="text" id="depLocation" class="input-box" placeholder="예: 모바일뱅킹">
+      </div>
+      <div class="input-group">
+        <label class="input-label">입금 계좌</label>
+        <input type="text" id="depAccount" class="input-box" placeholder="예: 000-0000-0000">
+      </div>
+      <div class="input-group">
+        <label class="input-label">메모</label>
+        <input type="text" id="depMemo" class="input-box" placeholder="예: 급여일 자동이체">
+      </div>
+      <button class="sheet-btn" onclick="saveDeposit()">가상 입금 반영</button>
     </div>
   </div>
 
-  <!-- 애플리케이션 스크립트 -->
+  <!-- 모달 2: 계좌 설정 -->
+  <div id="accountModal" class="modal-overlay hidden">
+    <div class="sheet">
+      <div class="sheet-title-row">
+        <span class="sheet-title">모의 계좌 설정</span>
+        <button class="icon-btn" onclick="closeModal('accountModal')"><ion-icon name="close" style="font-size: 24px;"></ion-icon></button>
+      </div>
+      <div class="sheet-desc">표시용 계좌 정보와 개인 계산 기준을 설정합니다.</div>
+      
+      <div class="input-group">
+        <label class="input-label">계좌 이름</label>
+        <input type="text" id="accName" class="input-box" placeholder="예: 여름 여행 적금">
+      </div>
+      <div class="input-group">
+        <label class="input-label">표시용 계좌 번호</label>
+        <input type="text" id="accNumber" class="input-box" placeholder="000-0000-0000">
+      </div>
+      <div class="two-cols">
+        <div class="input-group">
+          <label class="input-label">신규일</label>
+          <input type="text" id="accOpenedAt" class="input-box" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="input-group">
+          <label class="input-label">만기일</label>
+          <input type="text" id="accMaturesAt" class="input-box" placeholder="YYYY-MM-DD">
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">연 예상 금리 (%)</label>
+        <input type="number" step="0.1" id="accRate" class="input-box" placeholder="3.5">
+      </div>
+      <div class="input-group">
+        <label class="input-label">기존 잔액 (원)</label>
+        <input type="number" id="accInitialBalance" class="input-box" placeholder="0">
+      </div>
+      <button class="sheet-btn" onclick="saveAccountSettings()">설정 저장</button>
+    </div>
+  </div>
+
+  <!-- 모달 3: 해지예상조회 -->
+  <div id="exitQueryModal" class="modal-overlay hidden">
+    <div class="sheet">
+      <div class="sheet-title-row">
+        <span class="sheet-title">해지예상조회</span>
+        <button class="icon-btn" onclick="closeModal('exitQueryModal')"><ion-icon name="close" style="font-size: 24px;"></ion-icon></button>
+      </div>
+      <div class="sheet-desc" id="exitQueryDesc">현재 기록을 바탕으로 단리로 계산한 개인용 예상치입니다.</div>
+      
+      <div style="margin-top: 15px; border: 1px solid #E4E6E8; border-radius: 12px; padding: 16px; background-color: #FBFBFC; display: flex; flex-direction: column; gap: 10px;">
+        <div class="summary-row"><span class="summary-label">납입 원금</span><span class="summary-value" id="eqPrincipal">0원</span></div>
+        <div class="summary-row"><span class="summary-label" id="eqRateLabel">예상 이자 · 연 3.5%</span><span class="summary-value accent-blue" id="eqInterest">0원</span></div>
+        <div class="summary-row"><span class="summary-label">정부기여금</span><span class="summary-value accent-blue" id="eqGov">0원</span></div>
+        <div style="height: 1px; background-color: #E4E6E8; margin: 4px 0;"></div>
+        <div class="summary-row"><span class="summary-label" style="font-weight: bold; color: #202226;">예상 수령액</span><span class="summary-value" style="font-weight: bold; font-size: 20px;" id="eqTotal">0원</span></div>
+      </div>
+      <div class="note-text" style="margin: 12px 0 0 0;">세금, 실제 상품 금리, 우대 조건 및 정부 지원금 변동은 반영하지 않은 모의 계산값입니다.</div>
+      <button class="sheet-btn" onclick="closeModal('exitQueryModal')">확인</button>
+    </div>
+  </div>
+
+  <!-- 로직 스크립트 -->
   <script>
-    // 기본 상태 데이터
-    let state = {
-      darkMode: false,
-      textScale: 'md',
-      activeGoalId: 'default',
-      goals: [
-        { id: 'default', title: '기본 모의 적금', target: 1000000, current: 0, icon: '💰', createdAt: Date.now() }
-      ],
-      transactions: []
-    };
+    const STORAGE_KEY = "@simulated-savings-ledger/v1";
+    const MAX_DEPOSIT = 700000;
+    const DEFAULT_GOV_PER_DEP = 33000;
 
-    let selectedIcon = '💰';
+    let ledger = null;
 
-    // 로컬 스토리지 로드
-    function initApp() {
-      const saved = localStorage.getItem('mockSavingsData_v2');
-      if (saved) {
-        try {
-          state = JSON.parse(saved);
-        } catch (e) {
-          console.error("데이터 로드 오류", e);
-        }
+    function todayIso() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function addYears(isoDate, years) {
+      const [y, m, d] = isoDate.split("-").map(Number);
+      return `${y + years}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    }
+
+    function createInitialLedger() {
+      const openedAt = todayIso();
+      return {
+        account: {
+          name: "나의 모의 적금",
+          displayNumber: "123-4567-8901",
+          openedAt: openedAt,
+          maturesAt: addYears(openedAt, 5),
+          annualRate: 3.5,
+          initialBalance: 0,
+          linkedAccountNumbers: [],
+          governmentContributionPerDeposit: DEFAULT_GOV_PER_DEP
+        },
+        deposits: []
+      };
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try { ledger = JSON.parse(raw); } catch (e) { ledger = createInitialLedger(); }
+      } else {
+        ledger = createInitialLedger();
       }
-      applyTheme();
-      applyTextScale();
-      renderAll();
+      renderHomeScreen();
     }
 
     function persist() {
-      localStorage.setItem('mockSavingsData_v2', JSON.stringify(state));
-      renderAll();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ledger));
+      renderHomeScreen();
     }
 
-    // 탭 전환
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      const activeTabEl = document.getElementById(`tab-${tabId}`);
-      if (activeTabEl) activeTabEl.classList.remove('hidden');
-
-      const titles = { home: '홈 대시보드', dedicated: '전용 적금', history: '내역 관리', settings: '앱 설정' };
-      document.getElementById('appHeaderTitle').textContent = titles[tabId] || '모의 적금';
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        if (btn.dataset.tab === tabId) {
-          btn.className = 'nav-btn flex flex-col items-center text-brand-600 dark:text-brand-400';
-        } else {
-          btn.className = 'nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200';
-        }
-      });
-
-      if (tabId === 'history') renderHistoryList();
+    function formatKrw(v) {
+      return `${Math.round(v).toLocaleString("ko-KR")}원`;
     }
 
-    // 활성 목표 가져오기
-    function getActiveGoal() {
-      return state.goals.find(g => g.id === state.activeGoalId) || state.goals[0];
+    function formatDateKorean(iso) {
+      if (!iso) return "";
+      const [y, m, d] = iso.split("-");
+      return `${y}.${m}.${d}`;
     }
 
-    function changeActiveGoal(id) {
-      state.activeGoalId = id;
-      persist();
+    function formatTargetMonth(tm) {
+      if (!tm) return "";
+      const [y, m] = tm.split("-");
+      return `${y}.${m}월분`;
     }
 
-    // 입금 처리
-    function depositActive(amount, memo = '간편 입금') {
-      if (amount <= 0) return;
-      const goal = getActiveGoal();
-      if (!goal) return;
-
-      goal.current += amount;
-      state.transactions.unshift({
-        id: 'tx_' + Date.now(),
-        goalId: goal.id,
-        goalTitle: goal.title,
-        amount: amount,
-        memo: memo,
-        timestamp: Date.now()
-      });
-
-      persist();
+    function getTotalPrincipal() {
+      return ledger.deposits.reduce((acc, d) => acc + d.amount, 0);
     }
 
-    function openCustomDepositModal() {
-      document.getElementById('inputDepositAmount').value = '';
-      document.getElementById('inputDepositMemo').value = '';
-      document.getElementById('modalCustomDeposit').classList.remove('hidden');
+    function getTotalBalance() {
+      return (ledger.account.initialBalance || 0) + getTotalPrincipal();
     }
 
-    function submitCustomDeposit() {
-      const amount = Number(document.getElementById('inputDepositAmount').value);
-      const memo = document.getElementById('inputDepositMemo').value.trim() || '직접 입금';
-      if (!amount || amount <= 0) {
-        alert('올바른 금액을 입력해주세요.');
-        return;
-      }
-      depositActive(amount, memo);
-      closeModal('modalCustomDeposit');
-    }
-
-    // 모달 제어
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
-    function openNewGoalModal() {
-      document.getElementById('inputGoalTitle').value = '';
-      document.getElementById('inputGoalTarget').value = '';
-      selectGoalIcon('💰');
-      document.getElementById('modalNewGoal').classList.remove('hidden');
-    }
-
-    function selectGoalIcon(icon) {
-      selectedIcon = icon;
-      document.querySelectorAll('#iconPicker button').forEach(btn => {
-        if (btn.textContent.trim() === icon) {
-          btn.className = 'icon-opt text-lg p-2 rounded-xl bg-brand-50 dark:bg-slate-700 border border-brand-500';
-        } else {
-          btn.className = 'icon-opt text-lg p-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-transparent';
-        }
-      });
-    }
-
-    function createNewGoal() {
-      const title = document.getElementById('inputGoalTitle').value.trim();
-      const target = Number(document.getElementById('inputGoalTarget').value);
-      if (!title || target <= 0) {
-        alert('이름과 목표 금액을 올바르게 입력해주세요.');
-        return;
-      }
-
-      const newGoal = {
-        id: 'goal_' + Date.now(),
-        title: title,
-        target: target,
-        current: 0,
-        icon: selectedIcon,
-        createdAt: Date.now()
+    function getProgress() {
+      const start = new Date(`${ledger.account.openedAt}T00:00:00`).getTime();
+      const end = new Date(`${ledger.account.maturesAt}T00:00:00`).getTime();
+      const now = new Date().getTime();
+      const totalDays = Math.max(1, Math.round((end - start) / 86400000));
+      const elapsed = Math.min(totalDays, Math.max(0, Math.round((now - start) / 86400000)));
+      return {
+        percent: Math.round((elapsed / totalDays) * 100),
+        daysRemaining: Math.max(0, totalDays - elapsed)
       };
-
-      state.goals.push(newGoal);
-      state.activeGoalId = newGoal.id;
-      persist();
-      closeModal('modalNewGoal');
-      switchTab('home');
     }
 
-    function deleteGoal(id, e) {
-      e.stopPropagation();
-      if (state.goals.length <= 1) {
-        alert('최소 1개의 통장은 유지되어야 합니다.');
-        return;
-      }
-      if (confirm('해당 적금 통장과 관련 내역을 삭제하시겠습니까?')) {
-        state.goals = state.goals.filter(g => g.id !== id);
-        state.transactions = state.transactions.filter(t => t.goalId !== id);
-        if (state.activeGoalId === id) {
-          state.activeGoalId = state.goals[0].id;
-        }
-        persist();
-      }
+    function getGovernmentContribution() {
+      return ledger.deposits.length * (ledger.account.governmentContributionPerDeposit || DEFAULT_GOV_PER_DEP);
     }
 
-    // 테마 & 글자 크기
-    function toggleDarkMode() {
-      state.darkMode = !state.darkMode;
-      persist();
-      applyTheme();
+    function getEstimatedMaturityInterest() {
+      const maturity = new Date(`${ledger.account.maturesAt}T00:00:00`).getTime();
+      const annualRate = (ledger.account.annualRate || 0) / 100;
+      const initialDays = Math.max(0, Math.round((maturity - new Date(`${ledger.account.openedAt}T00:00:00`).getTime()) / 86400000));
+      const initInterest = (ledger.account.initialBalance || 0) * annualRate * (initialDays / 365);
+
+      return ledger.deposits.reduce((total, d) => {
+        const paidAt = new Date(`${d.paidAt}T00:00:00`).getTime();
+        const days = Math.max(0, Math.round((maturity - paidAt) / 86400000));
+        return total + d.amount * annualRate * (days / 365);
+      }, initInterest);
     }
 
-    function applyTheme() {
-      const dot = document.getElementById('toggleDot');
-      if (state.darkMode) {
-        document.documentElement.classList.add('dark');
-        if (dot) dot.style.transform = 'translateX(24px)';
-      } else {
-        document.documentElement.classList.remove('dark');
-        if (dot) dot.style.transform = 'translateX(0px)';
-      }
+    // Screen Switching
+    function showScreen(name) {
+      document.querySelectorAll('.view-screen').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`screen-${name}`).classList.remove('hidden');
+      if (name === 'home') renderHomeScreen();
+      if (name === 'dedicated') renderDedicatedScreen();
+      if (name === 'history') renderHistoryScreen();
+      window.scrollTo(0, 0);
     }
 
-    function setTextScale(scale) {
-      state.textScale = scale;
-      persist();
-      applyTextScale();
-    }
+    // Home Render
+    function renderHomeScreen() {
+      const balance = getTotalBalance();
+      const prog = getProgress();
 
-    function applyTextScale() {
-      document.body.classList.remove('text-scale-sm', 'text-scale-md', 'text-scale-lg');
-      document.body.classList.add(`text-scale-${state.textScale}`);
+      document.getElementById('homeAccountName').textContent = ledger.account.name;
+      document.getElementById('homeAccountNumber').textContent = ledger.account.displayNumber;
+      document.getElementById('homeBalance').textContent = formatKrw(balance);
+      document.getElementById('homeDday').textContent = `D-${prog.daysRemaining}`;
+      document.getElementById('homeProgressFill').style.width = `${Math.max(2, prog.percent)}%`;
+      document.getElementById('homeOpenedAt').textContent = `신규일 ${formatDateKorean(ledger.account.openedAt)}`;
+      document.getElementById('homeMaturesAt').textContent = `만기일 ${formatDateKorean(ledger.account.maturesAt)}`;
 
-      document.querySelectorAll('.scale-btn').forEach(btn => {
-        if (btn.dataset.scale === state.textScale) {
-          btn.className = 'scale-btn py-2 text-xs font-medium rounded-xl border border-brand-500 bg-brand-50 text-brand-600 dark:bg-slate-700 dark:text-brand-400';
-        } else {
-          btn.className = 'scale-btn py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-600';
-        }
-      });
-    }
+      const depositsSorted = [...ledger.deposits].sort((a, b) => b.paidAt.localeCompare(a.paidAt) || b.createdAt.localeCompare(a.createdAt));
+      const container = document.getElementById('homeHistoryContainer');
 
-    // 백업 및 리셋
-    function exportData() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `mock_savings_${new Date().toISOString().slice(0,10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-
-    function resetAllData() {
-      if (confirm('정말로 모든 적금 및 내역 데이터를 초기화하시겠습니까?')) {
-        localStorage.removeItem('mockSavingsData_v2');
-        location.reload();
-      }
-    }
-
-    // 렌더링 종합
-    function renderAll() {
-      const totalSaved = state.goals.reduce((acc, cur) => acc + cur.current, 0);
-      document.getElementById('headerTotalBadge').textContent = `총 ${totalSaved.toLocaleString()}원`;
-
-      // 1. 활성 적금 카드 렌더링
-      const activeGoal = getActiveGoal();
-      const selectEl = document.getElementById('activeGoalSelect');
-      selectEl.innerHTML = state.goals.map(g => `
-        <option value="${g.id}" ${g.id === activeGoal.id ? 'selected' : ''}>${g.icon} ${g.title}</option>
-      `).join('');
-
-      document.getElementById('activeGoalCurrent').textContent = activeGoal.current.toLocaleString();
-      document.getElementById('activeGoalTarget').textContent = `${activeGoal.target.toLocaleString()}원`;
-
-      const pct = Math.min(100, Math.round((activeGoal.current / activeGoal.target) * 100));
-      document.getElementById('activeGoalProgressBar').style.width = `${pct}%`;
-      document.getElementById('activeGoalPercent').textContent = `${pct}%`;
-
-      const remain = Math.max(0, activeGoal.target - activeGoal.current);
-      document.getElementById('activeGoalRemain').textContent = `${remain.toLocaleString()}원`;
-
-      // 2. 홈 화면 최근 3개 활동
-      const recentLogsEl = document.getElementById('homeRecentLogs');
-      const recentTx = state.transactions.slice(0, 3);
-      if (recentTx.length === 0) {
-        recentLogsEl.innerHTML = '<div class="py-4 text-center text-slate-400">아직 납입 활동이 없습니다.</div>';
-      } else {
-        recentLogsEl.innerHTML = recentTx.map(t => `
-          <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700/40">
-            <div>
-              <div class="font-semibold text-slate-800 dark:text-slate-200">${t.memo}</div>
-              <div class="text-[10px] text-slate-400">${t.goalTitle} · ${new Date(t.timestamp).toLocaleDateString()}</div>
-            </div>
-            <span class="font-bold text-emerald-600 dark:text-emerald-400">+${t.amount.toLocaleString()}원</span>
-          </div>
-        `).join('');
-      }
-
-      // 3. 전용 적금 목록 렌더링
-      const goalsContainer = document.getElementById('goalsListContainer');
-      goalsContainer.innerHTML = state.goals.map(g => {
-        const goalPct = Math.min(100, Math.round((g.current / g.target) * 100));
-        return `
-          <div onclick="changeActiveGoal('${g.id}'); switchTab('home');" class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border ${g.id === activeGoal.id ? 'border-brand-500 dark:border-brand-500 ring-1 ring-brand-500' : 'border-slate-200/70 dark:border-slate-700'} space-y-3 cursor-pointer">
-            <div class="flex justify-between items-start">
-              <div class="flex items-center space-x-2">
-                <span class="text-2xl">${g.icon}</span>
-                <div>
-                  <h4 class="font-bold text-slate-900 dark:text-white text-xs">${g.title}</h4>
-                  <p class="text-[10px] text-slate-400">목표: ${g.target.toLocaleString()}원</p>
-                </div>
-              </div>
-              <button onclick="deleteGoal('${g.id}', event)" class="text-slate-300 hover:text-rose-500 p-1 text-xs">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
-            <div>
-              <div class="flex justify-between text-xs font-semibold mb-1">
-                <span class="text-slate-800 dark:text-slate-200">${g.current.toLocaleString()}원</span>
-                <span class="text-brand-600 dark:text-brand-400">${goalPct}%</span>
-              </div>
-              <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                <div class="bg-brand-600 h-full rounded-full" style="width: ${goalPct}%"></div>
-              </div>
-            </div>
+      if (depositsSorted.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <ion-icon name="receipt-outline" style="font-size: 32px; color: #9A9EA3;"></ion-icon>
+            <div class="empty-title">아직 납입 이력이 없습니다.</div>
+            <div class="empty-desc">첫 가상 입금을 기록하고 적금 흐름을 확인해 보세요.</div>
           </div>
         `;
-      }).join('');
-
-      // 4. 내역 필터 드롭다운 갱신
-      const filterSelect = document.getElementById('historyFilterGoal');
-      if (filterSelect) {
-        filterSelect.innerHTML = `<option value="all">전체 통장 내역</option>` + state.goals.map(g => `
-          <option value="${g.id}">${g.icon} ${g.title}</option>
-        `).join('');
-      }
-    }
-
-    // 전체 내역 리스트 렌더링
-    function renderHistoryList() {
-      const container = document.getElementById('fullHistoryContainer');
-      const search = document.getElementById('historySearchInput').value.toLowerCase();
-      const goalFilter = document.getElementById('historyFilterGoal').value;
-
-      let filtered = state.transactions.filter(t => {
-        const matchSearch = t.memo.toLowerCase().includes(search) || t.goalTitle.toLowerCase().includes(search);
-        const matchGoal = goalFilter === 'all' || t.goalId === goalFilter;
-        return matchSearch && matchGoal;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = '<div class="p-8 text-center text-slate-400">일치하는 내역이 없습니다.</div>';
         return;
       }
 
-      container.innerHTML = filtered.map(t => `
-        <div class="p-3.5 flex justify-between items-center hover:bg-slate-50/50 dark:hover:bg-slate-700/30">
-          <div>
-            <div class="font-bold text-slate-800 dark:text-slate-100">${t.memo}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">${t.goalTitle} · ${new Date(t.timestamp).toLocaleString()}</div>
+      // Calculate running balances
+      const ascending = [...ledger.deposits].sort((a, b) => a.paidAt.localeCompare(b.paidAt) || a.createdAt.localeCompare(b.createdAt));
+      const balanceMap = {};
+      let runBal = ledger.account.initialBalance || 0;
+      ascending.forEach(d => {
+        runBal += d.amount;
+        balanceMap[d.id] = runBal;
+      });
+
+      container.innerHTML = depositsSorted.map(d => `
+        <div class="history-item">
+          <div class="history-title-row">
+            <span class="installment-text">${d.installment}회차</span>
+            <div class="vertical-line"></div>
+            <span class="target-month-text">${formatTargetMonth(d.targetMonth)}</span>
           </div>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400 text-xs">+${t.amount.toLocaleString()}원</span>
+          <div class="history-row"><span class="history-label">납입일자</span><span class="history-value">${formatDateKorean(d.paidAt)}</span></div>
+          <div class="history-row"><span class="history-label">납입금액</span><span class="history-value accent-blue">${formatKrw(d.amount)}</span></div>
+          <div class="history-row"><span class="history-label">납입 후 잔액</span><span class="history-value">${formatKrw(balanceMap[d.id] || 0)}</span></div>
+          <div class="transfer-memo">${[d.depositLocation, d.depositAccount, d.memo].filter(Boolean).join("  |  ") || "입금 정보 미입력"}</div>
         </div>
       `).join('');
     }
 
-    // 앱 실행
-    window.addEventListener('DOMContentLoaded', initApp);
+    // Dedicated Screen Render
+    function renderDedicatedScreen() {
+      const balance = getTotalBalance();
+      const gov = getGovernmentContribution();
+      const initialMonths = Math.max(0, Math.round((new Date(`${ledger.account.maturesAt}T00:00:00`).getTime() - new Date(`${ledger.account.openedAt}T00:00:00`).getTime()) / (30.44 * 86400000)));
+
+      document.getElementById('dedAccountName').textContent = ledger.account.name;
+      document.getElementById('dedAccountNumber').textContent = ledger.account.displayNumber;
+      document.getElementById('dedBalance').textContent = formatKrw(balance);
+      document.getElementById('dedGov').textContent = formatKrw(gov);
+      document.getElementById('dedGov2').textContent = formatKrw(gov);
+      document.getElementById('dedInitialBal').textContent = formatKrw(ledger.account.initialBalance || 0);
+      document.getElementById('dedInitialMonths').textContent = `${initialMonths}개월`;
+      document.getElementById('dedOpenedAt').textContent = formatDateKorean(ledger.account.openedAt);
+    }
+
+    // Manage History Screen Render
+    function renderHistoryScreen() {
+      const depositsSorted = [...ledger.deposits].sort((a, b) => b.paidAt.localeCompare(a.paidAt) || b.createdAt.localeCompare(a.createdAt));
+      const container = document.getElementById('mgmtHistoryContainer');
+
+      if (depositsSorted.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-title">관리할 납입 이력이 없습니다.</div></div>';
+        return;
+      }
+
+      container.innerHTML = depositsSorted.map(d => `
+        <div class="mgmt-item">
+          <div class="mgmt-head">
+            <div>
+              <div class="mgmt-title">${d.installment}회차 <span style="color: #81858A; font-weight: normal;">${formatTargetMonth(d.targetMonth)}</span></div>
+              <div class="mgmt-date">${formatDateKorean(d.paidAt)}</div>
+            </div>
+            <div class="mgmt-amount">${formatKrw(d.amount)}</div>
+          </div>
+          <div style="font-size: 12px; color: #83878D; text-align: right; margin-top: 8px;">
+            ${[d.depositLocation, d.depositAccount, d.memo].filter(Boolean).join("  |  ") || "입금 정보 미입력"}
+          </div>
+          <div class="mgmt-actions">
+            <button class="mgmt-btn" onclick="openEditDeposit('${d.id}')">수정</button>
+            <button class="mgmt-btn" style="border-color: #E2E4E6; color: #686D73;" onclick="deleteDeposit('${d.id}')">삭제</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Modal Controls
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function openDepositModal() {
+      const nextInst = ledger.deposits.length ? Math.max(...ledger.deposits.map(d => d.installment)) + 1 : 1;
+      document.getElementById('depositModalTitle').textContent = "가상 입금";
+      document.getElementById('depositModalDesc').textContent = "입금 정보를 입력하면 납입 이력에 바로 반영됩니다.";
+      document.getElementById('editDepositId').value = "";
+      document.getElementById('depAmount').value = "";
+      document.getElementById('depInstallment').value = nextInst;
+      document.getElementById('depTargetMonth').value = todayIso().slice(0, 7);
+      document.getElementById('depPaidAt').value = todayIso();
+      document.getElementById('depLocation').value = "모바일뱅킹";
+      document.getElementById('depAccount').value = ledger.account.displayNumber;
+      document.getElementById('depMemo').value = "";
+      openModal('depositModal');
+    }
+
+    function openEditDeposit(id) {
+      const entry = ledger.deposits.find(d => d.id === id);
+      if (!entry) return;
+      document.getElementById('depositModalTitle').textContent = "납입 이력 수정";
+      document.getElementById('depositModalDesc').textContent = "수정 후 저장하면 잔액과 예상 해지 금액이 다시 계산됩니다.";
+      document.getElementById('editDepositId').value = entry.id;
+      document.getElementById('depAmount').value = entry.amount;
+      document.getElementById('depInstallment').value = entry.installment;
+      document.getElementById('depTargetMonth').value = entry.targetMonth;
+      document.getElementById('depPaidAt').value = entry.paidAt;
+      document.getElementById('depLocation').value = entry.depositLocation || "";
+      document.getElementById('depAccount').value = entry.depositAccount || "";
+      document.getElementById('depMemo').value = entry.memo || "";
+      openModal('depositModal');
+    }
+
+    function saveDeposit() {
+      const editId = document.getElementById('editDepositId').value;
+      const amount = Number(document.getElementById('depAmount').value);
+      const installment = Number(document.getElementById('depInstallment').value);
+      const targetMonth = document.getElementById('depTargetMonth').value.trim();
+      const paidAt = document.getElementById('depPaidAt').value.trim();
+      const depositLocation = document.getElementById('depLocation').value.trim();
+      const depositAccount = document.getElementById('depAccount').value.trim();
+      const memo = document.getElementById('depMemo').value.trim();
+
+      if (!amount || amount <= 0 || amount > MAX_DEPOSIT) {
+        alert("입금액은 1원 이상 700,000원 이하로 입력해 주세요.");
+        return;
+      }
+      if (!installment || installment < 1) {
+        alert("회차는 1 이상의 정수로 입력해 주세요.");
+        return;
+      }
+
+      if (editId) {
+        ledger.deposits = ledger.deposits.map(d => d.id === editId ? {
+          ...d, amount, installment, targetMonth, paidAt, depositLocation, depositAccount, memo
+        } : d);
+      } else {
+        ledger.deposits.push({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          amount, installment, targetMonth, paidAt, depositLocation, depositAccount, memo,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      persist();
+      closeModal('depositModal');
+      if (!document.getElementById('screen-history').classList.contains('hidden')) {
+        renderHistoryScreen();
+      }
+    }
+
+    function deleteDeposit(id) {
+      if (confirm("해당 납입 이력을 삭제하시겠습니까?")) {
+        ledger.deposits = ledger.deposits.filter(d => d.id !== id);
+        persist();
+        renderHistoryScreen();
+      }
+    }
+
+    function openAccountModal() {
+      document.getElementById('accName').value = ledger.account.name;
+      document.getElementById('accNumber').value = ledger.account.displayNumber;
+      document.getElementById('accOpenedAt').value = ledger.account.openedAt;
+      document.getElementById('accMaturesAt').value = ledger.account.maturesAt;
+      document.getElementById('accRate').value = ledger.account.annualRate;
+      document.getElementById('accInitialBalance').value = ledger.account.initialBalance || 0;
+      openModal('accountModal');
+    }
+
+    function saveAccountSettings() {
+      const name = document.getElementById('accName').value.trim();
+      const displayNumber = document.getElementById('accNumber').value.trim() || "번호를 설정해 주세요";
+      const openedAt = document.getElementById('accOpenedAt').value.trim();
+      const maturesAt = document.getElementById('accMaturesAt').value.trim();
+      const annualRate = Number(document.getElementById('accRate').value);
+      const initialBalance = Number(document.getElementById('accInitialBalance').value);
+
+      if (!name) { alert("계좌 이름을 입력해 주세요."); return; }
+      ledger.account = { ...ledger.account, name, displayNumber, openedAt, maturesAt, annualRate, initialBalance };
+      persist();
+      closeModal('accountModal');
+    }
+
+    function openExitQueryModal() {
+      const principal = getTotalBalance();
+      const interest = getEstimatedMaturityInterest();
+      const gov = getGovernmentContribution();
+      const total = principal + interest + gov;
+
+      document.getElementById('eqPrincipal').textContent = formatKrw(principal);
+      document.getElementById('eqRateLabel').textContent = `예상 이자 · 연 ${ledger.account.annualRate}%`;
+      document.getElementById('eqInterest').textContent = formatKrw(interest);
+      document.getElementById('eqGov').textContent = formatKrw(gov);
+      document.getElementById('eqTotal').textContent = formatKrw(total);
+      document.getElementById('exitQueryDesc').textContent = `현재 기록을 바탕으로 만기일 ${formatDateKorean(ledger.account.maturesAt)}까지 단리로 계산한 개인용 예상치입니다.`;
+      openModal('exitQueryModal');
+    }
+
+    function toggleAccordion(id) {
+      const body = document.getElementById(`${id}Body`);
+      const icon = document.getElementById(`${id}Icon`);
+      if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        icon.setAttribute('name', 'chevron-up');
+      } else {
+        body.classList.add('hidden');
+        icon.setAttribute('name', 'chevron-down');
+      }
+    }
+
+    function openMenu() { document.getElementById('menuDrawerOverlay').classList.remove('hidden'); }
+    function closeMenu() { document.getElementById('menuDrawerOverlay').classList.add('hidden'); }
+
+    function resetAllData() {
+      if (confirm("정말로 모든 적금 및 납입 데이터를 초기화하시겠습니까?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        loadData();
+        closeMenu();
+        showScreen('home');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadData);
   </script>
 </body>
 </html>
